@@ -1,6 +1,9 @@
 import React from 'react'
+import { useAuth } from '../contexts/AuthContext'
 
-export default function Login({ onLogin }) {
+export default function Login() {
+  const { signInWithMicrosoft } = useAuth()
+
   return (
     <div className="container flex justify-center items-center animate-fade-in" style={{ minHeight: '80vh' }}>
       <div className="card" style={{ maxWidth: '400px', width: '100%', textAlign: 'center' }}>
@@ -10,7 +13,7 @@ export default function Login({ onLogin }) {
         <div className="flex flex-col gap-4">
           <button 
             className="btn btn-outline" 
-            onClick={onLogin}
+            onClick={signInWithMicrosoft}
             style={{ borderColor: '#0078d4', color: '#0078d4', fontWeight: 'bold' }}
           >
             <svg width="20" height="20" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
@@ -33,7 +36,7 @@ export default function Login({ onLogin }) {
             <input type="text" className="input-field" placeholder="أدخل البريد أو الجوال" />
           </div>
 
-          <button className="btn btn-primary" onClick={onLogin}>
+          <button className="btn btn-primary" onClick={() => alert('التسجيل بالبريد سيتم تفعيله لاحقاً')}>
             المتابعة
           </button>
         </div>

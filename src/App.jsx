@@ -2,11 +2,27 @@ import { useState } from 'react'
 import Login from './components/Login'
 import TeacherDashboard from './components/TeacherDashboard'
 import StudentChat from './components/StudentChat'
+import { useAuth } from './contexts/AuthContext'
 import './index.css'
 
 function App() {
-  // 'login', 'teacher_dashboard', 'student_chat'
-  const [currentView, setCurrentView] = useState('login')
+  const { user, loading, signOut } = useAuth()
+  const [currentView, setCurrentView] = useState('teacher_dashboard')
+
+  if (loading) {
+    return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>جاري التحميل...</div>
+  }
+
+  // إذا لم يكن مسجلاً، اظهر فقط شاشة تسجيل الدخول
+  if (!user) {
+    return (
+      <div className="app-container">
+        <main style={{ padding: '2rem 1rem' }}>
+          <Login />
+        </main>
+      </div>
+    )
+  }
 
   return (
     <div className="app-container">
@@ -15,10 +31,10 @@ function App() {
         <button className="btn btn-outline" onClick={() => setCurrentView('login')}>شاشة الدخول</button>
         <button className="btn btn-outline" onClick={() => setCurrentView('teacher_dashboard')}>لوحة المعلم</button>
         <button className="btn btn-outline" onClick={() => setCurrentView('student_chat')}>محادثة الطالب</button>
+        <button className="btn btn-outline" onClick={signOut} style={{ color: 'red', borderColor: 'red' }}>تسجيل الخروج</button>
       </nav>
 
       <main style={{ padding: '2rem 1rem' }}>
-        {currentView === 'login' && <Login onLogin={() => setCurrentView('teacher_dashboard')} />}
         {currentView === 'teacher_dashboard' && <TeacherDashboard />}
         {currentView === 'student_chat' && <StudentChat />}
       </main>
