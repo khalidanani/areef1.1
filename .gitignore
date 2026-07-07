@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Project specifics
+*.zip
+curricula_extracted/
+HaramApp_Identity_Export/

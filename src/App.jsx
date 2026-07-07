@@ -1,45 +1,77 @@
-import { useState } from 'react'
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import Login from './components/Login'
 import TeacherDashboard from './components/TeacherDashboard'
+import CurriculumBank from './components/CurriculumBank'
 import StudentChat from './components/StudentChat'
-import { useAuth } from './contexts/AuthContext'
+import StudentDashboard from './components/StudentDashboard'
+import RoleSelection from './components/RoleSelection'
+import PricingPlans from './components/PricingPlans'
+import PWAInstallPrompt from './components/PWAInstallPrompt'
+import { AuthProvider, useAuth } from './contexts/AuthContext'
+import LayoutWrapper from './components/layout/LayoutWrapper'
 import './index.css'
 
-function App() {
-  const { user, loading, signOut } = useAuth()
-  const [currentView, setCurrentView] = useState('teacher_dashboard')
-
-  if (loading) {
-    return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>جاري التحميل...</div>
-  }
-
-  // إذا لم يكن مسجلاً، اظهر فقط شاشة تسجيل الدخول
+function ProtectedRoute({ children }) {
+  const { user } = useAuth();
   if (!user) {
     return (
-      <div className="app-container">
-        <main style={{ padding: '2rem 1rem' }}>
-          <Login />
-        </main>
+      <div className="container-xxl container-p-y text-center mt-5">
+        <h2 className="mb-4">يجب تسجيل الدخول للوصول إلى هذه الصفحة</h2>
+        <Link to="/" className="btn btn-primary">العودة لتسجيل الدخول</Link>
       </div>
-    )
+    );
+  }
+  return children;
+}
+
+function AppRoutes() {
+  const location = useLocation();
+  const isAuthPage = location.pathname === '/' || location.pathname === '/login' || location.pathname === '/role-selection';
+  
+  if (isAuthPage) {
+    return (
+      <div className="layout-wrapper layout-content-navbar layout-without-menu">
+        <div className="layout-container">
+          <div className="layout-page">
+            <div className="content-wrapper">
+              <div className="container-xxl flex-grow-1 container-p-y d-flex justify-content-center align-items-center">
+                <Routes>
+                  <Route path="/" element={<Login />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/role-selection" element={<ProtectedRoute><RoleSelection /></ProtectedRoute>} />
+                </Routes>
+              </div>
+            </div>
+          </div>
+        </div>
+        <PWAInstallPrompt />
+      </div>
+    );
   }
 
   return (
-    <div className="app-container">
-      {/* Simple navigation for the prototype to switch between views */}
-      <nav style={{ padding: '1rem', background: '#fff', borderBottom: '1px solid var(--border-color)', display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-        <button className="btn btn-outline" onClick={() => setCurrentView('login')}>شاشة الدخول</button>
-        <button className="btn btn-outline" onClick={() => setCurrentView('teacher_dashboard')}>لوحة المعلم</button>
-        <button className="btn btn-outline" onClick={() => setCurrentView('student_chat')}>محادثة الطالب</button>
-        <button className="btn btn-outline" onClick={signOut} style={{ color: 'red', borderColor: 'red' }}>تسجيل الخروج</button>
-      </nav>
+    <LayoutWrapper>
+      <Routes>
+        <Route path="/teacher-dashboard" element={<ProtectedRoute><TeacherDashboard /></ProtectedRoute>} />
+        <Route path="/teacher" element={<ProtectedRoute><TeacherDashboard /></ProtectedRoute>} />
+        <Route path="/curriculum" element={<ProtectedRoute><CurriculumBank /></ProtectedRoute>} />
+        <Route path="/student-dashboard" element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>} />
+        <Route path="/student-chat/:classId" element={<ProtectedRoute><StudentChat /></ProtectedRoute>} />
+        <Route path="/pricing" element={<ProtectedRoute><PricingPlans /></ProtectedRoute>} />
+      </Routes>
+      <PWAInstallPrompt />
+    </LayoutWrapper>
+  );
+}
 
-      <main style={{ padding: '2rem 1rem' }}>
-        {currentView === 'teacher_dashboard' && <TeacherDashboard />}
-        {currentView === 'student_chat' && <StudentChat />}
-      </main>
-    </div>
+function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <AppRoutes />
+      </Router>
+    </AuthProvider>
   )
 }
 
-export default App
+export default App;

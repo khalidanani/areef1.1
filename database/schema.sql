@@ -1,6 +1,6 @@
 -- =========================================
 -- عريف: بناء جداول قاعدة البيانات (المرحلة 1 و 2)
--- نسخة Supabase (PostgreSQL) المحدثة لدعم تعدد المعلمين
+-- نسخة Supabase (PostgreSQL)
 -- =========================================
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -15,11 +15,10 @@ CREATE TABLE teachers (
 );
 
 -- 2. جدول الطلاب (Students)
--- هوية مستقلة للطالب ليدخل عبرها لجميع مواده
 CREATE TABLE students (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     full_name TEXT NOT NULL,
-    student_code TEXT UNIQUE NOT NULL, -- كود الدخول الخاص بالطالب
+    student_code TEXT UNIQUE NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
@@ -34,7 +33,6 @@ CREATE TABLE classes (
 );
 
 -- 4. الانضمام للفصول (Class Enrollments) - Many-to-Many
--- يربط الطالب الواحد بعدة فصول (وبالتالي بعدة معلمين)
 CREATE TABLE class_enrollments (
     student_id UUID NOT NULL REFERENCES students(id) ON DELETE CASCADE,
     class_id UUID NOT NULL REFERENCES classes(id) ON DELETE CASCADE,
@@ -79,11 +77,19 @@ CREATE TABLE questions (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- إعدادات الأمان (Row Level Security)
+-- RLS
 ALTER TABLE teachers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE classes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE students ENABLE ROW LEVEL SECURITY;
 ALTER TABLE class_enrollments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE books ENABLE ROW LEVEL SECURITY;
+ALTER TABLE chapters ENABLE ROW LEVEL SECURITY;
+ALTER TABLE lessons ENABLE ROW LEVEL SECURITY;
+ALTER TABLE questions ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Teachers can view their own data" ON teachers FOR SELECT USING (auth.uid() = id);
 CREATE POLICY "Teachers can manage their own classes" ON classes FOR ALL USING (auth.uid() = teacher_id);
+CREATE POLICY "Anyone can read books" ON books FOR SELECT USING (true);
+CREATE POLICY "Anyone can read chapters" ON chapters FOR SELECT USING (true);
+CREATE POLICY "Anyone can read lessons" ON lessons FOR SELECT USING (true);
+CREATE POLICY "Anyone can read questions" ON questions FOR SELECT USING (true);

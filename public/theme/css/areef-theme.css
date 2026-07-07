@@ -1,0 +1,45 @@
+/* Areef Custom Theme Overrides */
+:root {
+  --bs-primary: #2b6ccb !important;
+  --bs-primary-rgb: 43, 108, 203 !important;
+  --bs-primary-bg-subtle: #e6f0fa !important;
+  --bs-primary-border-subtle: #b3d1f2 !important;
+  
+  /* Additional primary color mappings that Vuexy/Bootstrap might use */
+  --bs-link-color: #2b6ccb !important;
+  --bs-link-hover-color: #1e4d91 !important;
+}
+
+.btn-primary {
+  background-color: var(--bs-primary) !important;
+  border-color: var(--bs-primary) !important;
+  color: #fff !important;
+}
+
+.btn-primary:hover {
+  background-color: #1e4d91 !important;
+  border-color: #1e4d91 !important;
+}
+
+.text-primary {
+  color: var(--bs-primary) !important;
+}
+
+.bg-primary {
+  background-color: var(--bs-primary) !important;
+}
+
+/* Base override for layout background */
+body {
+  background-color: #f5f5f9; /* Light layout bg */
+}
+
+/* Areef specific touches */
+.layout-menu-fixed .layout-navbar-full .layout-page {
+  padding-top: 5rem !important;
+}
+
+/* Hide some specific HaramApp elements if they leak */
+.haram-swal {
+  /* Only keep the popup logic, override colors */
+}

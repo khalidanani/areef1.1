@@ -1,0 +1,2097 @@
+.revision-override-surah,
+.revision-override-end-surah,
+.revision-override-verse,
+.revision-override-end-verse { border-radius: 6px !important; }
+.revision-override-verse,
+.revision-override-end-verse { min-width: 0; font-size: 0.875rem !important; height: 100%; }
+@media (max-width: 768px) {
+  .revision-override-control {
+    grid-template-columns: auto minmax(0,1fr) 34px !important;
+    height: auto !important;
+    padding: 10px 12px !important;
+  }
+}
+.revision-override-control .select2-container--default .select2-selection--single,
+.revision-override-control .select2-container--default .select2-selection--single:focus,
+.revision-override-control .select2-container--default.select2-container--open .select2-selection--single { border-radius: 6px !important; }
+/* Select2 dropdowns — global rules live further down (~line 1888 onward).
+   The page used to have attendance-card-scoped 8px overrides here; those
+   were promoted to the unified 12px + primary-border styling so every
+   dropdown on the page shares one visual identity. */
+.revision-override-verse::-webkit-outer-spin-button,
+.revision-override-verse::-webkit-inner-spin-button,
+.revision-override-end-verse::-webkit-outer-spin-button,
+.revision-override-end-verse::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+@font-face {
+  font-family: 'UthmanicHafs';
+  src: url('/fonts/uthmanic_hafs_v20.ttf') format('truetype');
+  font-display: swap;
+}
+/* Opt-in marker: only elements explicitly tagged as Quran text get the
+   Uthmanic typeface. Everything else (UI labels, buttons, confirmation
+   dialogs) keeps the global app font. */
+.quran-text { font-family: 'UthmanicHafs', serif !important; }
+
+/* Quran-text SweetAlert popups (الحفظ / المراجعة / جنب الدرس verse views):
+   no decorative icon block — verse text is the focus. Selector mirrors the
+   haram-swal theme's icon selector and adds .quran-popup so we win on
+   specificity (haram-swal.css loads after activities.css, so a plain class
+   rule alone would lose). */
+html body .swal2-container .swal2-popup.haram-swal.quran-popup:not(.swal2-toast) .swal2-icon,
+.swal2-popup.quran-popup .swal2-icon {
+  display: none !important;
+}
+
+/* Primary color now uses Bootstrap's --bs-primary which is set dynamically via setColor() */
+/* For halaqa_id 1 (القرآن): #315b4d (green) - default */
+/* For halaqa_id 2 (المتون): #315971 (blue) */
+
+/* SweetAlert2 Custom Styling - Modern Design */
+.swal2-border-radius:not(.haram-swal) {
+  border-radius: 16px !important;
+  padding: 2.5rem 2rem 2rem !important;
+}
+
+.swal2-popup:not(.haram-swal) .swal2-icon {
+  margin: 0 auto 0.75rem !important;
+  border-width: 0 !important;
+  width: 80px !important;
+  height: 80px !important;
+}
+
+.swal2-popup:not(.haram-swal) .swal2-icon.swal2-success {
+  background-color: rgba(40, 199, 111, 0.1) !important;
+  border-radius: 50% !important;
+}
+
+.swal2-popup:not(.haram-swal) .swal2-icon.swal2-success [class^='swal2-success-line'] {
+  background-color: var(--bs-success) !important;
+}
+
+.swal2-popup:not(.haram-swal) .swal2-icon.swal2-success .swal2-success-ring {
+  border-color: rgba(40, 199, 111, 0.3) !important;
+}
+
+.swal2-popup:not(.haram-swal) .swal2-icon.swal2-error {
+  background-color: rgba(234, 84, 85, 0.1) !important;
+  border-radius: 50% !important;
+}
+
+.swal2-popup:not(.haram-swal) .swal2-icon.swal2-error [class^='swal2-x-mark-line'] {
+  background-color: var(--bs-danger) !important;
+}
+
+.swal2-popup:not(.haram-swal) .swal2-icon.swal2-warning {
+  background-color: rgba(255, 193, 7, 0.1) !important;
+  border-radius: 50% !important;
+  color: var(--bs-warning) !important;
+  border-color: rgba(255, 193, 7, 0.3) !important;
+}
+
+.swal2-popup:not(.haram-swal) .swal2-icon.swal2-warning .swal2-icon-content {
+  color: var(--bs-warning) !important;
+  font-size: 3.75rem !important;
+}
+
+.swal2-popup:not(.haram-swal) .swal2-title {
+  font-size: 1.375rem !important;
+  font-weight: 600 !important;
+  margin: 0 0 0.75rem 0 !important;
+  padding: 0 !important;
+  color: var(--bs-body-color) !important;
+  text-align: center !important;
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+div:where(.swal2-container):not(.haram-swal-container) h2:where(.swal2-title) {
+  text-align: center !important;
+  margin: 0 0 0.75rem 0 !important;
+  padding: 0 !important;
+}
+
+.swal2-container:not(.haram-swal-container) .swal2-popup .swal2-title {
+  text-align: center !important;
+  margin: 0 0 0.75rem 0 !important;
+  padding: 0 !important;
+}
+
+.swal2-html-container-custom {
+  margin: 0 0 1.5rem !important;
+  font-size: 0.9375rem !important;
+  line-height: 1.6 !important;
+  color: var(--bs-secondary-color) !important;
+  text-align: center !important;
+}
+
+.swal2-popup:not(.haram-swal) .swal2-actions {
+  margin: 0 !important;
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 12px !important;
+  justify-content: center !important;
+}
+
+.swal2-popup:not(.haram-swal) .swal2-confirm {
+  flex: 1 !important;
+  max-width: none !important;
+  margin: 0 !important;
+  border-radius: 12px !important;
+  padding: 0.75rem 1.5rem !important;
+  font-size: 0.9375rem !important;
+  font-weight: 500 !important;
+  box-shadow: none !important;
+}
+
+.swal2-popup:not(.haram-swal) .swal2-cancel {
+  flex: 1 !important;
+  max-width: none !important;
+  margin: 0 !important;
+  border-radius: 12px !important;
+  padding: 0.75rem 1.5rem !important;
+  font-size: 0.9375rem !important;
+  font-weight: 500 !important;
+  box-shadow: none !important;
+}
+
+.swal2-popup:not(.haram-swal).swal2-show {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Activities Tabs - Inverted Design */
+.activities-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 0;
+  background: var(--bs-primary);
+  border-radius: 12px 12px 0 0;
+  padding: 0;
+  position: relative;
+}
+
+.activities-tab {
+  flex: 1;
+  padding: 1.25rem 1rem;
+  border: none;
+  background: var(--bs-primary);
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  position: relative;
+  z-index: 1;
+  border-radius: 12px 12px 0 0;
+}
+
+.activities-tab:not(.active):hover i,
+.activities-tab:not(.active):hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.activities-tab.active {
+  background: var(--bs-card-bg);
+  color: var(--bs-primary);
+  border: none;
+  z-index: 2;
+  margin-top: 8px;
+  margin-bottom: 0;
+  margin-left: 8px;
+  margin-right: 8px;
+  border-radius: 12px 12px 0 0;
+}
+
+/* Mobile view - icon on top, label below */
+@media (max-width: 768px) {
+  .activities-tabs {
+    border-radius: 8px 8px 0 0;
+  }
+
+  .activities-tab {
+    flex-direction: column;
+    padding: 0.75rem 0.5rem;
+    gap: 0.25rem;
+    border-radius: 8px 8px 0 0;
+  }
+
+  .activities-tab.active {
+    margin-top: 6px;
+    margin-left: 6px;
+    margin-right: 6px;
+    border-radius: 8px 8px 0 0;
+  }
+
+  .activities-tab i {
+    font-size: 1.25rem;
+  }
+}
+
+.tab-content {
+  border: none;
+  padding: 0;
+  margin-top: 0;
+}
+
+.tab-pane {
+  border-radius: 12px;
+}
+
+/* ─── Activities calendar — two-column day cell ─────────────────────────
+   Main column (Gregorian: dow + day + month) sits on the RIGHT in RTL,
+   aside column (Hijri: day + month name) sits on the LEFT in a tinted
+   inset card. When selected, the whole pill turns primary green and the
+   aside card switches to the HQ gold accent.
+
+   Border-color/width intentionally omitted from !important so the JS
+   can still pin today's primary-color border inline. */
+.attendance-day-btn {
+  display: grid !important;
+  grid-template-columns: 1fr 86px !important;
+  align-items: stretch !important;
+  width: 100% !important;
+  min-height: 78px !important;
+  border: 1px solid var(--bs-border-color);
+  background: var(--bs-body-bg) !important;
+  border-radius: 12px !important;
+  padding: 0 !important;
+  text-align: start !important;
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease !important;
+  cursor: pointer !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+.attendance-day-btn:hover:not([disabled]):not(.is-selected) {
+  transform: translateY(-1px) !important;
+  border-color: rgba(var(--bs-primary-rgb), 0.35) !important;
+}
+
+/* ── Main column (Gregorian) ───────────────────────────────────── */
+.attendance-day-btn .day-main {
+  padding: 8px 12px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  gap: 2px !important;
+  text-align: start !important;
+}
+
+.attendance-day-btn .dow {
+  color: var(--bs-secondary-color) !important;
+  font-size: 0.78rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0 !important;
+  line-height: 1.1 !important;
+  text-transform: none !important;
+}
+
+.attendance-day-btn .dom {
+  font-size: 1.6rem !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  color: var(--bs-heading-color) !important;
+  font-variant-numeric: tabular-nums !important;
+  letter-spacing: -0.5px !important;
+}
+
+.attendance-day-btn .dom-month {
+  font-size: 0.72rem !important;
+  font-weight: 500 !important;
+  color: var(--bs-secondary-color) !important;
+  line-height: 1.1 !important;
+}
+
+/* ── Aside column (Hijri tinted card) ────────────────────────────
+   Inner radius follows the concentric-corner rule:
+     inner-radius ≈ outer-radius − gap  →  12 − 5 ≈ 8 (matches our 8px token).
+   At 4px the inner corners read as visually sharper than the outer 12px,
+   which breaks the nesting illusion. */
+.attendance-day-btn .day-aside {
+  background: rgba(var(--bs-body-color-rgb), 0.05) !important;
+  margin: 5px !important;
+  border-radius: 8px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 1px !important;
+  padding: 3px 2px !important;
+  transition: background 0.15s ease !important;
+}
+
+.attendance-day-btn .day-hijri-num {
+  font-size: 1.15rem !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  color: var(--bs-heading-color) !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+.attendance-day-btn .day-hijri-month {
+  font-size: 0.68rem !important;
+  font-weight: 500 !important;
+  line-height: 1.1 !important;
+  color: var(--bs-secondary-color) !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+}
+
+/* ── Selected: primary fill + gold aside ───────────────────────── */
+.attendance-day-btn.is-selected {
+  background: var(--bs-primary) !important;
+  border-color: var(--bs-primary) !important;
+  box-shadow: 0 4px 14px rgba(var(--bs-primary-rgb), 0.22) !important;
+}
+.attendance-day-btn.is-selected .dow       { color: rgba(255, 255, 255, 0.78) !important; }
+.attendance-day-btn.is-selected .dom       { color: #fff !important; }
+.attendance-day-btn.is-selected .dom-month { color: rgba(255, 255, 255, 0.7) !important; }
+
+.attendance-day-btn.is-selected .day-aside       { background: rgb(var(--bs-gold-rgb)) !important; }
+.attendance-day-btn.is-selected .day-hijri-num   { color: #fff !important; }
+.attendance-day-btn.is-selected .day-hijri-month { color: rgba(255, 255, 255, 0.88) !important; }
+
+/* ── Past-editable: neutralized — all past days look the same ──── */
+.attendance-day-btn.is-evaluation-only:not(.is-selected) {
+  border-color: var(--bs-border-color) !important;
+  border-width: 1px !important;
+  background: var(--bs-body-bg) !important;
+}
+
+/* ── Disabled (future) ─────────────────────────────────────────── */
+.attendance-day-btn.is-disabled,
+.attendance-day-btn[disabled] {
+  background: var(--bs-body-bg) !important;
+  border-style: dashed !important;
+  pointer-events: none;
+}
+
+/* Month label header — Gregorian leads (bold, primary text color),
+   Hijri stacked beneath (smaller, muted). Two-row layout matches the
+   two-column day cells below: same calendar order, same hierarchy. */
+#attendanceMonthLabel {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 2px !important;
+  letter-spacing: 0.01em;
+}
+#attendanceMonthLabel .month-label-greg {
+  color: var(--bs-heading-color) !important;
+  font-weight: 700 !important;
+  font-size: 1rem !important;
+  line-height: 1.2;
+}
+#attendanceMonthLabel .month-label-hijri {
+  color: var(--bs-secondary-color) !important;
+  font-weight: 500 !important;
+  font-size: 0.8rem !important;
+  line-height: 1.2;
+}
+
+.attendance-today-btn {
+  color: var(--bs-body-color) !important;
+  text-decoration: none !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  padding: 4px 10px !important;
+  border-radius: 6px !important;
+  transition: all 0.15s ease !important;
+}
+
+.attendance-today-btn:hover {
+  color: var(--bs-primary) !important;
+  background: rgba(var(--bs-primary-rgb), 0.06) !important;
+  text-decoration: none !important;
+}
+
+.attendance-nav-btn {
+  background: transparent !important;
+  border: 1px solid var(--bs-border-color) !important;
+  color: var(--bs-secondary-color) !important;
+  width: 30px !important;
+  height: 30px !important;
+  padding: 0 !important;
+  border-radius: 6px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.15s ease !important;
+}
+
+.attendance-nav-btn i {
+  font-size: 1rem !important;
+}
+
+.attendance-nav-btn:hover {
+  color: var(--bs-primary) !important;
+  border-color: rgba(var(--bs-primary-rgb), 0.4) !important;
+  background: rgba(var(--bs-primary-rgb), 0.06) !important;
+}
+
+.attendance-back-btn {
+  transition: color 0.2s ease !important;
+}
+
+.attendance-back-btn:hover {
+  color: var(--bs-primary) !important;
+}
+
+#attendanceDaysGrid {
+  grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+  margin-top: 12px !important;
+}
+
+/* ── Tablet: 5 days in the grid (vs 7 on desktop, 3 on mobile).
+   JS matches by emitting only 5 day cells in this range
+   (see activities-calendar.js getDaysToShow). Upper bound is 1365.98 so
+   ALL tablet landscapes stay on this layout: iPad (1080), iPad Air (1180),
+   iPad Pro 11" (1194-1210), iPad Pro 12.9" (1366) — not just portrait. */
+@media (min-width: 577px) and (max-width: 1365.98px) {
+  #attendanceDaysGrid {
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+  }
+}
+
+/* ── Mobile + Tablet (≤1365.98px): stack each day cell vertically.
+   Main column (Greg) sits on top, Hijri row sits below as a strip.
+   The side-by-side (main + 86px aside) layout is desktop-only because
+   on smaller viewports the aside crowds the main column and the Hijri
+   month name (e.g. جمادى الآخرة) clips. Stacking gives both sections
+   their own full-width rows and reads cleanly at any tablet width. */
+@media (max-width: 1365.98px) {
+  .attendance-day-btn {
+    min-height: 102px !important;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: 1fr auto !important;
+  }
+
+  .attendance-day-btn .day-main {
+    padding: 8px 4px !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 1px !important;
+  }
+
+  /* Hijri becomes a horizontal strip: day + month on one line, centered. */
+  .attendance-day-btn .day-aside {
+    flex-direction: row !important;
+    gap: 4px !important;
+    justify-content: center !important;
+    margin: 0 5px 5px 5px !important;
+    padding: 4px 6px !important;
+  }
+
+  .attendance-day-btn .dow        { font-size: 0.72rem !important; }
+  .attendance-day-btn .dom        { font-size: 1.5rem !important; }
+  .attendance-day-btn .dom-month  { font-size: 0.68rem !important; }
+  .attendance-day-btn .day-hijri-num   { font-size: 0.95rem !important; line-height: 1 !important; }
+  .attendance-day-btn .day-hijri-month { font-size: 0.68rem !important; line-height: 1 !important; }
+}
+
+/* ── Mobile (≤576px): 3 days in the grid + non-calendar mobile tweaks. */
+@media (max-width: 576px) {
+  #attendanceDaysGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+
+  .card-body.halaqa-details-mobile {
+    padding: 16px !important;
+  }
+}
+
+.attendance-student-card {
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  border: 1px solid var(--bs-border-color);
+  transition: border-color 0.2s ease;
+}
+.attendance-student-card.expanded {
+  border-color: var(--bs-primary) !important;
+  border-width: 2px;
+}
+.status-buttons-grid {
+  border-top: 1px solid var(--bs-border-color);
+}
+@media (max-width: 576px) {
+  .attendance-student-card {
+    margin-bottom: 10px;
+  }
+}
+.attendance-student-card.status-present {
+  background: color-mix(in sRGB, #7cb342 8%, var(--bs-paper-bg));
+  border-color: color-mix(in sRGB, #7cb342 25%, var(--bs-border-color));
+}
+.attendance-student-card.status-absent {
+  background: color-mix(in sRGB, #e57373 8%, var(--bs-paper-bg));
+  border-color: color-mix(in sRGB, #e57373 25%, var(--bs-border-color));
+}
+.attendance-student-card.status-late {
+  background: color-mix(in sRGB, #ffb74d 8%, var(--bs-paper-bg));
+  border-color: color-mix(in sRGB, #ffb74d 25%, var(--bs-border-color));
+}
+.attendance-student-card.status-excused {
+  background: color-mix(in sRGB, #64b5f6 8%, var(--bs-paper-bg));
+  border-color: color-mix(in sRGB, #64b5f6 25%, var(--bs-border-color));
+}
+.student-name {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--bs-heading-color);
+}
+.student-status-badge {
+  font-size: 0.8125rem;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.student-status-badge.bg-success {
+  background-color: #7cb342 !important;
+}
+.student-status-badge.bg-danger {
+  background-color: #e57373 !important;
+}
+.student-status-badge.bg-warning {
+  background-color: #ffb74d !important;
+}
+.student-status-badge.bg-info {
+  background-color: #64b5f6 !important;
+}
+.card-main-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.card-main-row:hover {
+  background-color: rgba(var(--bs-primary-rgb), 0.05);
+}
+@media (max-width: 576px) {
+  .card-main-row {
+    padding: 12px;
+    gap: 10px;
+  }
+}
+.toggle-chevron {
+  font-size: 1.5rem;
+  color: var(--bs-secondary-color);
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+  order: -1;
+}
+.card-main-row[aria-expanded='true'] .toggle-chevron {
+  transform: rotate(180deg);
+}
+.status-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+}
+.attendance-btn-group {
+  flex: 1;
+  display: flex;
+  gap: 8px;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 12px;
+  padding: 8px;
+  background: var(--bs-body-bg);
+}
+.attendance-btn {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid var(--bs-border-color);
+  background: var(--bs-paper-bg);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 52px;
+  color: var(--bs-body-color);
+}
+.attendance-btn i {
+  font-size: 1.5rem;
+}
+.attendance-btn span {
+  font-size: 0.8125rem;
+}
+.attendance-btn:hover:not(.active-present):not(.active-absent):not(.active-late):not(.active-excused) {
+  background: var(--bs-body-bg);
+}
+.attendance-btn[data-status='present'] {
+  color: #7cb342;
+}
+.attendance-btn[data-status='absent'] {
+  color: #e57373;
+}
+.attendance-btn[data-status='late'] {
+  color: #ffb74d;
+}
+.attendance-btn[data-status='excused'] {
+  color: #64b5f6;
+}
+.status-btn i {
+  font-size: 2rem;
+}
+.status-btn span {
+  font-size: 0.9375rem;
+}
+@media (max-width: 576px) {
+  .status-btn span {
+    display: none;
+  }
+  .status-btn {
+    padding: 16px 8px;
+  }
+  /* All 4 attendance buttons in one horizontal line - icon on top, label below */
+  .attendance-student-card .collapse > div > div[style*='display: flex'] {
+    padding: 10px 12px 0 12px !important;
+    gap: 8px !important;
+    flex-wrap: nowrap !important;
+  }
+  .attendance-btn-group {
+    flex: 1;
+    display: flex;
+    gap: 8px;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    background: transparent;
+  }
+  .attendance-btn {
+    flex: 1;
+    padding: 10px 4px;
+    flex-direction: column;
+    gap: 4px;
+    min-height: auto;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 8px;
+  }
+  .attendance-btn i {
+    font-size: 1.5rem;
+  }
+  .attendance-btn span {
+    font-size: 0.6875rem;
+    display: block !important;
+  }
+}
+.attendance-btn.active-present {
+  background: #7cb342 !important;
+  border-color: #7cb342 !important;
+  color: white !important;
+}
+.attendance-btn.active-present i,
+.attendance-btn.active-present span {
+  color: white !important;
+}
+.attendance-btn.active-absent {
+  background: #e57373 !important;
+  border-color: #e57373 !important;
+  color: white !important;
+}
+.attendance-btn.active-absent i,
+.attendance-btn.active-absent span {
+  color: white !important;
+}
+.attendance-btn.active-late {
+  background: #ffb74d !important;
+  border-color: #ffb74d !important;
+  color: white !important;
+}
+.attendance-btn.active-late i,
+.attendance-btn.active-late span {
+  color: white !important;
+}
+.attendance-btn.active-excused {
+  background: #64b5f6 !important;
+  border-color: #64b5f6 !important;
+  color: white !important;
+}
+.attendance-btn.active-excused i,
+.attendance-btn.active-excused span {
+  color: white !important;
+}
+.attendance-summary-inline {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.summary-card-inline {
+  flex: 1;
+  min-width: 140px;
+  background: var(--bs-paper-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-between;
+}
+.summary-card-inline i {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  width: 24px;
+  text-align: center;
+}
+.summary-label-inline {
+  font-size: 0.875rem;
+  font-weight: 500;
+  flex: 1;
+  white-space: nowrap;
+}
+.summary-count-inline {
+  font-size: 1.5rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  min-width: 28px;
+  text-align: left;
+}
+.summary-card-inline.present {
+  border-color: #7cb342;
+  background: color-mix(in sRGB, #7cb342 5%, var(--bs-paper-bg));
+  color: #7cb342;
+}
+.summary-card-inline.absent {
+  border-color: #e57373;
+  background: color-mix(in sRGB, #e57373 5%, var(--bs-paper-bg));
+  color: #e57373;
+}
+.summary-card-inline.late {
+  border-color: #ffb74d;
+  background: color-mix(in sRGB, #ffb74d 5%, var(--bs-paper-bg));
+  color: #ffb74d;
+}
+.summary-card-inline.excused {
+  border-color: #64b5f6;
+  background: color-mix(in sRGB, #64b5f6 5%, var(--bs-paper-bg));
+  color: #64b5f6;
+}
+.summary-card-inline.not-marked {
+  border-color: #9e9e9e;
+  background: color-mix(in sRGB, #9e9e9e 5%, var(--bs-paper-bg));
+  color: #9e9e9e;
+}
+.summary-card-inline.evaluated {
+  border-color: #b18f5d;
+  background: color-mix(in sRGB, #b18f5d 5%, var(--bs-paper-bg));
+  color: #b18f5d;
+}
+.summary-card-inline.not-evaluated {
+  border-color: #9e9e9e;
+  background: color-mix(in sRGB, #9e9e9e 5%, var(--bs-paper-bg));
+  color: #9e9e9e;
+}
+.evaluation-legend {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+  padding: 0;
+  background: var(--bs-body-bg);
+  border-radius: 12px;
+  border: 1px solid var(--bs-border-color);
+  overflow: hidden;
+}
+.legend-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--bs-body-color);
+  padding: 12px 8px;
+  background: var(--bs-paper-bg);
+  border-left: 1px solid var(--bs-border-color);
+}
+.legend-item:last-child {
+  border-left: none;
+}
+.legend-item i {
+  font-size: 1.75rem;
+}
+.legend-item:nth-child(1) i {
+  color: #cea939;
+}
+.legend-item:nth-child(2) i {
+  color: #9ccc65;
+}
+.legend-item:nth-child(3) i {
+  color: #ffb953;
+}
+.legend-item:nth-child(4) i {
+  color: #e57373;
+}
+.legend-item:nth-child(5) i {
+  color: #9e9e9e;
+}
+@media (max-width: 576px) {
+  .evaluation-legend {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  .legend-item {
+    flex-direction: column;
+    font-size: 0.75rem;
+    gap: 6px;
+    padding: 10px 4px;
+  }
+  .legend-item i {
+    font-size: 1.5rem;
+  }
+}
+@media (max-width: 768px) {
+  .summary-card-inline {
+    min-width: 120px;
+    padding: 10px 12px;
+  }
+  .summary-card-inline i {
+    font-size: 1.25rem;
+  }
+  .summary-label-inline {
+    font-size: 0.8125rem;
+  }
+  .summary-count-inline {
+    font-size: 1.25rem;
+  }
+}
+@media (max-width: 576px) {
+  .attendance-summary-inline {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 6px;
+    overflow-x: visible;
+  }
+  .summary-card-inline {
+    flex: 1;
+    padding: 8px 4px;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 3px;
+    min-width: 0;
+  }
+  .summary-card-inline i {
+    font-size: 1.25rem;
+    width: auto;
+  }
+  .summary-label-inline {
+    font-size: 0.625rem;
+    font-weight: 600;
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+  .summary-count-inline {
+    font-size: 1.125rem;
+    font-weight: 700;
+    min-width: auto;
+    text-align: center;
+  }
+}
+
+/* Inline Plan Creation Form */
+#createPlanFormContainer {
+  display: none;
+  margin-bottom: 24px;
+}
+#createPlanFormContainer.show {
+  display: block;
+}
+.plan-form-card {
+  background: var(--bs-card-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: 12px;
+  padding: 24px;
+}
+.plan-form-section {
+  border: 1px solid var(--bs-border-color);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.plan-form-section h6 {
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+.plan-direction-option {
+  position: relative;
+  overflow: hidden;
+}
+.plan-direction-option .bg-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 80px;
+  opacity: 0.1;
+  pointer-events: none;
+  z-index: 0;
+}
+.plan-direction-option .custom-option-content {
+  position: relative;
+  z-index: 1;
+}
+.plan-day-selector {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+/* Plan Type Pills — converted to the shared pill-group pattern
+   (same as .plans-filter-pills). Tinted rounded container with two
+   transparent pills inside; active pill gets white bg + primary text
+   + thin primary border. Height matches the prior capsule (~46px). */
+.plan-type-pill-group {
+  display: flex;
+  gap: 3px;
+  background: var(--bs-tertiary-bg);
+  border-radius: 8px;
+  padding: 3px;
+  height: 46px;  /* preserves the pre-conversion button height */
+}
+.plan-type-pill-group .plan-type-pill {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--bs-body-color);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+.plan-type-pill-group .plan-type-pill:hover:not(.active) { color: var(--bs-primary); }
+.plan-type-pill-group .plan-type-pill.active {
+  background: var(--bs-primary);
+  color: #fff;
+  border-color: var(--bs-primary);
+  box-shadow: 0 2px 6px rgba(var(--bs-primary-rgb), .2);
+}
+/* Stack on phones AND tablets — col-md-6 (~360-480px) can't fit 2-3 long
+   Arabic pill labels horizontally without overflow; horizontal only on lg+. */
+@media (max-width: 991.98px) {
+  .plan-type-pill-group {
+    flex-direction: column;
+    height: auto;
+  }
+  .plan-type-pill-group .plan-type-pill {
+    width: 100%;
+    min-height: 42px;
+  }
+}
+
+/* (legacy) generic btn-outline-secondary active state — preserved for
+   other buttons in the app that still rely on it. */
+.btn-outline-secondary.active {
+  background-color: var(--bs-primary) !important;
+  border-color: var(--bs-primary) !important;
+  color: white !important;
+}
+.plan-day-option {
+  /* Grid item - no flex needed */
+}
+.plan-day-option input[type='checkbox'],
+.plan-day-checkbox {
+  position: absolute !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  pointer-events: none !important;
+}
+.plan-day-option label,
+.plan-day-label {
+  display: block;
+  padding: 8px 12px;
+  border: 2px solid var(--bs-border-color);
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+  font-size: 0.875rem;
+  background: var(--bs-body-bg);
+  user-select: none;
+}
+.plan-day-option input[type='checkbox']:checked + label,
+.plan-day-checkbox:checked + .plan-day-label {
+  border-color: var(--bs-primary);
+  background: color-mix(in sRGB, var(--bs-primary) 10%, var(--bs-body-bg));
+  color: var(--bs-primary);
+}
+.plan-day-option label:hover,
+.plan-day-label:hover {
+  border-color: var(--bs-primary);
+}
+/* Mobile: 2 columns for day selector (creates 4 rows: 2+2+2+1) */
+@media (max-width: 768px) {
+  .plan-day-selector {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .plan-form-card {
+    padding: 16px;
+  }
+  .plan-form-section {
+    padding: 16px;
+  }
+  .plan-day-option {
+    min-width: 70px;
+  }
+}
+.toggle-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 28px;
+  height: 16px;
+  background-color: rgba(var(--bs-body-color-rgb), 0.15);
+  border-radius: 16px;
+  transition: background-color 0.3s ease;
+  border: 1px solid rgba(var(--bs-body-color-rgb), 0.1);
+  flex-shrink: 0;
+}
+.toggle-slider {
+  position: absolute;
+  top: 50%;
+  right: 2px;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+#toggleExpandCollapseBtn.active .toggle-switch,
+#toggleExpandCollapseEvalBtn.active .toggle-switch,
+#toggleExpandCollapseAttnEvalBtn.active .toggle-switch,
+#toggleExpandCollapsePlansBtn.active .toggle-switch {
+  background-color: var(--bs-primary);
+}
+#toggleExpandCollapseBtn.active .toggle-slider,
+#toggleExpandCollapseEvalBtn.active .toggle-slider,
+#toggleExpandCollapseAttnEvalBtn.active .toggle-slider,
+#toggleExpandCollapsePlansBtn.active .toggle-slider {
+  transform: translateY(-50%) translateX(-12px);
+}
+.attendance-floating-actions,
+.attneval-floating-actions {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 1000;
+  padding: 12px 16px;
+  background: var(--bs-paper-bg);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  flex-direction: row-reverse;
+}
+.attendance-floating-actions .btn,
+.attneval-floating-actions .btn {
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+#markAllPresentBtn {
+  background-color: transparent !important;
+  border: 1px solid var(--bs-primary) !important;
+  color: var(--bs-primary) !important;
+  transition: all 0.3s ease;
+}
+#markAllPresentBtn i {
+  color: var(--bs-primary) !important;
+}
+#markAllPresentBtn:hover {
+  background-color: color-mix(in sRGB, var(--bs-primary) 10%, transparent) !important;
+}
+#markAllPresentBtn.active,
+#markAllPresentBtn:active {
+  background-color: var(--bs-primary) !important;
+  border-color: var(--bs-primary) !important;
+  color: white !important;
+}
+#markAllPresentBtn.active i,
+#markAllPresentBtn:active i {
+  color: white !important;
+}
+@media (max-width: 576px) {
+  .attendance-floating-actions {
+    gap: 8px;
+    padding: 8px 12px;
+    bottom: 16px;
+  }
+  .attendance-floating-actions .btn {
+    padding: 12px 16px;
+    font-size: 0.9375rem;
+  }
+  .attendance-floating-actions #resetAttendanceBtn span,
+  .attendance-floating-actions #resetEvaluationBtn span {
+    display: none;
+  }
+  .attendance-floating-actions #resetAttendanceBtn,
+  .attendance-floating-actions #resetEvaluationBtn {
+    padding: 12px;
+    min-width: 48px;
+    justify-content: center;
+  }
+}
+
+.evaluation-sections-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 0;
+  padding: 16px 12px 0px 12px;
+}
+.evaluation-section {
+  border: 1px solid var(--bs-border-color);
+  border-radius: 12px;
+  background: var(--bs-paper-bg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+.evaluation-section.eval-excellent {
+  background: color-mix(in sRGB, #cea939 8%, var(--bs-paper-bg));
+  border-color: color-mix(in sRGB, #cea939 25%, var(--bs-border-color));
+}
+.evaluation-section.eval-very-good {
+  background: color-mix(in sRGB, #9ccc65 8%, var(--bs-paper-bg));
+  border-color: color-mix(in sRGB, #9ccc65 25%, var(--bs-border-color));
+}
+.evaluation-section.eval-acceptable {
+  background: color-mix(in sRGB, #ffb953 8%, var(--bs-paper-bg));
+  border-color: color-mix(in sRGB, #ffb953 25%, var(--bs-border-color));
+}
+.evaluation-section.eval-not-memorized {
+  background: color-mix(in sRGB, #e57373 8%, var(--bs-paper-bg));
+  border-color: color-mix(in sRGB, #e57373 25%, var(--bs-border-color));
+}
+.evaluation-section.eval-not-listened {
+  background: color-mix(in sRGB, #9e9e9e 8%, var(--bs-paper-bg));
+  border-color: color-mix(in sRGB, #9e9e9e 25%, var(--bs-border-color));
+}
+.evaluation-section-header {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 0;
+  gap: 0;
+}
+.evaluation-section-title {
+  padding: 10px 16px;
+  text-align: center;
+  border-bottom: 1px solid var(--bs-border-color);
+}
+.evaluation-section h6 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0;
+  color: var(--bs-heading-color);
+  white-space: nowrap;
+}
+.evaluation-section-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+}
+.evaluation-counter-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 6px;
+  padding: 0;
+}
+.evaluation-label {
+  font-size: 0.75rem;
+  color: var(--bs-secondary-color);
+  text-align: center;
+}
+.counter-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0;
+  width: 100%;
+  position: relative;
+  padding: 0;
+  min-height: 68px;
+}
+.evaluation-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  width: 100%;
+  border-top: 1px solid var(--bs-border-color);
+}
+.evaluation-buttons-grid.evaluation-buttons-5 {
+  grid-template-columns: repeat(5, 1fr);
+}
+.evaluation-btn {
+  padding: 12px 8px;
+  border: none;
+  border-right: 1px solid var(--bs-border-color);
+  background: var(--bs-paper-bg);
+  border-radius: 0;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 56px;
+  color: var(--bs-body-color);
+  width: 100%;
+}
+.evaluation-btn:first-child {
+  border-right: none;
+}
+.evaluation-btn:last-child {
+  border-right: 1px solid var(--bs-border-color);
+}
+.evaluation-btn i {
+  font-size: 1.25rem;
+  transition: color 0.2s ease;
+  flex-shrink: 0;
+}
+.evaluation-btn span {
+  display: block;
+  font-size: 0.8125rem;
+  line-height: 1.2;
+  text-align: center;
+}
+
+/* Mobile - hide icons, show only labels */
+@media (max-width: 768px) {
+  .evaluation-btn i {
+    display: none;
+  }
+  .evaluation-btn span {
+    font-size: 0.875rem;
+  }
+  .evaluation-btn {
+    padding: 10px 6px;
+    min-height: 48px;
+  }
+}
+.evaluation-btn[data-value='5'] i,
+.evaluation-btn[data-value='4']:not(.evaluation-buttons-5 .evaluation-btn) i {
+  color: #cea939;
+}
+.evaluation-buttons-5 .evaluation-btn[data-value='4'] i {
+  color: #9ccc65;
+}
+.evaluation-btn[data-value='3'] i {
+  color: #ffb953;
+}
+.evaluation-btn[data-value='1'] i {
+  color: #e57373;
+}
+.evaluation-btn[data-value='0'] i {
+  color: #9e9e9e;
+}
+.evaluation-btn:hover:not(.active-excellent):not(.active-very-good):not(.active-acceptable):not(
+    .active-not-memorized
+  ):not(.active-not-listened) {
+  background: rgba(var(--bs-primary-rgb), 0.08);
+}
+.evaluation-btn.active-excellent {
+  background: #cea939 !important;
+}
+.evaluation-btn.active-excellent i,
+.evaluation-btn.active-excellent span {
+  color: white !important;
+}
+.evaluation-btn.active-very-good {
+  background: #9ccc65 !important;
+}
+.evaluation-btn.active-very-good i,
+.evaluation-btn.active-very-good span {
+  color: white !important;
+}
+.evaluation-btn.active-acceptable {
+  background: #ffb953 !important;
+}
+.evaluation-btn.active-acceptable i,
+.evaluation-btn.active-acceptable span {
+  color: white !important;
+}
+.evaluation-btn.active-not-memorized {
+  background: #e57373 !important;
+}
+.evaluation-btn.active-not-memorized i,
+.evaluation-btn.active-not-memorized span {
+  color: white !important;
+}
+.evaluation-btn.active-not-listened {
+  background: #9e9e9e !important;
+}
+.evaluation-btn.active-not-listened i,
+.evaluation-btn.active-not-listened span {
+  color: white !important;
+}
+.notes-section {
+  border: 1px solid var(--bs-border-color);
+  border-radius: 12px;
+  padding: 12px;
+  background: var(--bs-paper-bg);
+  margin: 0px 12px 16px 12px;
+}
+.evaluation-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0;
+  color: var(--bs-body-color);
+  white-space: nowrap;
+}
+.counter-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.counter-btn {
+  flex: 0 0 auto;
+  width: 40px;
+  align-self: stretch;
+  border-radius: 0;
+  border: none;
+  background: rgba(var(--bs-body-color-rgb), 0.05);
+  color: var(--bs-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+}
+.counter-btn:first-child {
+  border-left: 1px solid var(--bs-border-color);
+}
+.counter-btn:last-child {
+  border-right: 1px solid var(--bs-border-color);
+}
+.counter-btn:hover {
+  background: rgba(var(--bs-body-color-rgb), 0.08);
+}
+.counter-btn:active {
+  background: rgba(var(--bs-body-color-rgb), 0.12);
+  transform: scale(0.95);
+}
+.counter-value {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--bs-heading-color);
+  flex: 0 1 auto;
+  max-width: 80px;
+  background: var(--bs-body-bg);
+  padding: 12px 8px;
+  margin: 0;
+  border-radius: 8px;
+  border: 1px solid var(--bs-border-color);
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+.counter-value:focus {
+  border-color: var(--bs-primary);
+}
+.counter-value::-webkit-outer-spin-button,
+.counter-value::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.counter-value[type='number'] {
+  -moz-appearance: textfield;
+}
+.notes-textarea {
+  width: 100%;
+  min-height: 60px;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.875rem;
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  resize: vertical;
+  transition: border-color 0.2s ease;
+}
+.notes-textarea:focus {
+  outline: none;
+  border-color: var(--bs-primary);
+}
+.notes-textarea::placeholder {
+  color: var(--bs-secondary-color);
+}
+
+/* Combined Summary Section */
+.combined-summary-wrapper {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+.summary-group {
+  display: flex;
+  gap: 8px;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 12px;
+  padding: 8px;
+  background: var(--bs-body-bg);
+}
+.attendance-summary-group {
+  flex: 5;
+}
+.evaluation-summary-group {
+  flex: 2;
+}
+.summary-item {
+  flex: 1;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 8px;
+  background: var(--bs-paper-bg);
+  min-height: 60px;
+}
+.summary-count {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.summary-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--bs-body-color);
+}
+.summary-label i {
+  font-size: 1.125rem;
+}
+
+/* Mobile Responsive Summary Cards */
+@media (max-width: 1024px) {
+  .combined-summary-wrapper {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .summary-group {
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 6px;
+  }
+  .summary-item {
+    min-height: 50px;
+    padding: 8px 10px;
+    gap: 6px;
+    flex: 1 1 calc(33.333% - 6px);
+    min-width: calc(33.333% - 6px);
+  }
+  .summary-count {
+    font-size: 1.25rem;
+  }
+  .summary-label {
+    font-size: 0.8125rem;
+    gap: 4px;
+  }
+  .summary-label i {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .summary-item {
+    flex: 1 1 calc(50% - 6px);
+    min-width: calc(50% - 6px);
+  }
+  .summary-count {
+    font-size: 1.1875rem;
+  }
+  .summary-label {
+    font-size: 0.78125rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .summary-group {
+    gap: 4px;
+    padding: 4px;
+  }
+  .summary-item {
+    min-height: 45px;
+    padding: 6px 8px;
+    gap: 4px;
+    flex: 1 1 calc(50% - 4px);
+    min-width: calc(50% - 4px);
+  }
+  .summary-count {
+    font-size: 1.125rem;
+  }
+  .summary-label {
+    font-size: 0.75rem;
+  }
+  .summary-label i {
+    font-size: 0.9375rem;
+  }
+}
+.summary-present .summary-count {
+  color: #7cb342;
+}
+.summary-present .summary-label i {
+  color: #7cb342;
+}
+.summary-absent .summary-count {
+  color: #e57373;
+}
+.summary-absent .summary-label i {
+  color: #e57373;
+}
+.summary-late .summary-count {
+  color: #ffb74d;
+}
+.summary-late .summary-label i {
+  color: #ffb74d;
+}
+.summary-excused .summary-count {
+  color: #64b5f6;
+}
+.summary-excused .summary-label i {
+  color: #64b5f6;
+}
+.summary-not-marked .summary-count {
+  color: #9e9e9e;
+}
+.summary-not-marked .summary-label i {
+  color: #9e9e9e;
+}
+.summary-evaluated .summary-count {
+  color: #7cb342;
+}
+.summary-evaluated .summary-label i {
+  color: #7cb342;
+}
+.summary-not-evaluated .summary-count {
+  color: #9e9e9e;
+}
+.summary-not-evaluated .summary-label i {
+  color: #9e9e9e;
+}
+@media (max-width: 992px) {
+  .evaluation-sections-container {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 0 8px 16px 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .evaluation-sections-container {
+    padding: 0 4px 12px 4px;
+    gap: 10px;
+  }
+  .evaluation-section {
+    padding: 0;
+  }
+  .evaluation-section-header {
+    padding: 0;
+    font-size: 0.875rem;
+  }
+  .evaluation-section-title {
+    padding: 10px 12px;
+  }
+  .evaluation-buttons-grid {
+    padding: 8px 12px 12px 12px;
+    gap: 6px;
+  }
+  .evaluation-btn {
+    padding: 14px 10px;
+    font-size: 0.8125rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .evaluation-sections-container {
+    padding: 4px 8px 0 8px;
+    gap: 10px;
+  }
+  .evaluation-section {
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .evaluation-section-title {
+    padding: 12px;
+    text-align: center;
+    position: relative;
+    border-bottom: none;
+  }
+  .evaluation-section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: var(--bs-border-color);
+  }
+  .evaluation-section-header {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  .evaluation-counter-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 0 0 8px 0;
+  }
+  .counter-control {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1;
+    padding: 12px 0 0 0;
+    min-height: 68px;
+  }
+  .counter-btn {
+    width: 40px;
+    flex: 0 0 40px;
+    align-self: stretch;
+    margin: -12px 0 -8px 0;
+    border-radius: 0;
+  }
+  .counter-btn:first-child {
+    border-left: 1px solid var(--bs-border-color);
+  }
+  .counter-btn:last-child {
+    border-right: 1px solid var(--bs-border-color);
+  }
+  .evaluation-buttons-grid {
+    padding: 0;
+    gap: 0;
+    border-radius: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid var(--bs-border-color);
+  }
+  .evaluation-buttons-grid.evaluation-buttons-5 {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  .evaluation-btn {
+    padding: 14px 10px;
+    font-size: 0.75rem;
+    min-height: 50px;
+    border-radius: 0;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: all 0.2s ease;
+  }
+
+  /* 3-button layout (RTL: ممتاز | لم يحفظ | لم يسمع) */
+  .evaluation-buttons-grid:not(.evaluation-buttons-5) .evaluation-btn:nth-child(1) {
+    /* لم يسمع - no borders */
+  }
+  .evaluation-buttons-grid:not(.evaluation-buttons-5) .evaluation-btn:nth-child(2) {
+    /* لم يحفظ - right border only */
+    border-right: 1px solid var(--bs-border-color);
+  }
+  .evaluation-buttons-grid:not(.evaluation-buttons-5) .evaluation-btn:nth-child(3) {
+    /* ممتاز - right border only */
+    border-right: 1px solid var(--bs-border-color);
+  }
+
+  /* 5-button layout (RTL: ممتاز | جيد جداً | مقبول | لم يحفظ | لم يسمع) */
+  .evaluation-buttons-grid.evaluation-buttons-5 .evaluation-btn:nth-child(1) {
+    /* لم يسمع - no borders */
+  }
+  .evaluation-buttons-grid.evaluation-buttons-5 .evaluation-btn:nth-child(2) {
+    /* لم يحفظ - right border only */
+    border-right: 1px solid var(--bs-border-color);
+  }
+  .evaluation-buttons-grid.evaluation-buttons-5 .evaluation-btn:nth-child(3) {
+    /* مقبول - right border only */
+    border-right: 1px solid var(--bs-border-color);
+  }
+  .evaluation-buttons-grid.evaluation-buttons-5 .evaluation-btn:nth-child(4) {
+    /* جيد جداً - right border only */
+    border-right: 1px solid var(--bs-border-color);
+  }
+  .evaluation-buttons-grid.evaluation-buttons-5 .evaluation-btn:nth-child(5) {
+    /* ممتاز - no borders */
+  }
+  .evaluation-btn:hover {
+    background-color: rgba(var(--bs-body-color-rgb), 0.05);
+  }
+  .evaluation-btn:active {
+    background-color: rgba(var(--bs-body-color-rgb), 0.08);
+  }
+  .notes-section {
+    padding: 12px;
+    margin: 10px 12px 12px 12px;
+    border-top: 1px solid var(--bs-border-color);
+  }
+  .notes-textarea {
+    font-size: 0.875rem;
+    padding: 10px;
+  }
+}
+
+.no-plans-message {
+  text-align: center;
+  padding: 48px 36px;
+  background: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: 12px;
+  margin: 20px;
+}
+.no-plans-message .icon-wrapper {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+  background: color-mix(in sRGB, var(--bs-secondary) 10%, transparent);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.no-plans-message i {
+  font-size: 2.5rem;
+  color: var(--bs-secondary);
+}
+.no-plans-message h5 {
+  color: var(--bs-heading-color);
+  margin-bottom: 12px;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+.no-plans-message p {
+  color: var(--bs-secondary-color);
+  margin-bottom: 12px;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+.no-plans-message p strong {
+  color: var(--bs-heading-color);
+  font-weight: 600;
+}
+.no-plans-message .btn {
+  height: 44px;
+  border-radius: 12px;
+  padding: 0.594rem 1.5rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+
+/* Plans Tab - Student Cards */
+.plans-student-card {
+  background: var(--bs-paper-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+.plans-student-card:hover {
+  border-color: var(--bs-primary);
+}
+.plans-student-card.expanded {
+  border-color: var(--bs-primary);
+}
+.plans-student-card .card-main-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  /* Matches .attendance-student-card .card-main-row so the header row reads
+     the same across tabs (16px desktop, 12px mobile via the override below). */
+  padding: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.plans-student-card .card-main-row:hover {
+  background-color: rgba(var(--bs-primary-rgb), 0.05);
+}
+@media (max-width: 576px) {
+  .plans-student-card .card-main-row {
+    padding: 12px;
+    gap: 10px;
+  }
+}
+.plans-student-card .student-plan-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.plans-student-card .student-plan-badge i {
+  font-size: 1rem;
+}
+.plans-student-card .student-details-wrapper {
+  padding: 16px 20px;
+  margin: 16px 20px;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 12px;
+}
+.plans-student-card .student-details-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  align-items: flex-start;
+}
+.plans-student-card .detail-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-direction: row-reverse;
+}
+.plans-student-card .detail-item i {
+  font-size: 1.25rem;
+  color: var(--bs-primary);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+.plans-student-card .detail-item .detail-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: right;
+  flex: 1;
+}
+.plans-student-card .detail-item small {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--bs-secondary-color);
+}
+.plans-student-card .detail-item .fw-medium {
+  font-size: 0.8125rem;
+  color: var(--bs-heading-color);
+  font-weight: 600;
+}
+.plans-student-card .plan-actions-row {
+  padding: 20px;
+  text-align: center;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+.plans-student-card .plan-actions-row .btn {
+  border-radius: 8px;
+}
+.plans-student-card .no-plan-wrapper {
+  margin: 16px 20px;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 12px;
+}
+
+/* Mobile responsive: 2 items per row for student details */
+@media (max-width: 768px) {
+  .plans-student-card .student-details-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.plan-filter-btn.active {
+  background-color: var(--bs-primary) !important;
+  color: white !important;
+  border-color: var(--bs-primary) !important;
+}
+
+/* ── Global Select2 styling — unified visual identity for every dropdown
+   on the page. Was previously scoped to the plan-form Surah selector
+   only; promoted to apply globally so the attendance card's dropdowns,
+   the Surah dropdown, and any future Select2 widget all look the same.
+   12px primary-bordered popover + 8px search input + 6px option rows. */
+
+/* The visible input (closed state) — matches form-control 8px corners */
+.select2-container .select2-selection {
+  border-radius: 8px !important;
+}
+
+/* The open popover */
+.select2-dropdown {
+  border-radius: 12px !important;
+  border: 1px solid var(--bs-primary) !important;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+/* Inner results container */
+.select2-dropdown .select2-results {
+  border-radius: 12px !important;
+}
+
+/* Search input inside the dropdown (when searchable) */
+.select2-dropdown .select2-search {
+  padding: 8px;
+}
+.select2-dropdown .select2-search__field {
+  border-radius: 8px !important;
+}
+
+/* Bottom corners of the scrollable results list (sit flush against the
+   popover's rounded bottom) */
+.select2-dropdown .select2-results__options {
+  border-radius: 0 0 12px 12px !important;
+}
+
+/* Each result row */
+.select2-dropdown .select2-results__option {
+  border-radius: 6px !important;
+}
+
+/* Combined Attendance & Evaluation Tab Styles */
+.attendance-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 2px solid var(--bs-border-color);
+  border-radius: 999px;
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.attendance-pill:hover:not(:disabled) {
+  border-color: var(--bs-primary);
+  background: color-mix(in sRGB, var(--bs-primary) 10%, var(--bs-body-bg));
+}
+.attendance-pill.active {
+  background: var(--bs-primary);
+  border-color: var(--bs-primary);
+  color: white;
+}
+.attendance-pill:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.attendance-pill i {
+  font-size: 1rem;
+}
+
+.counter-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rating-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 2px solid var(--bs-border-color);
+  border-radius: 8px;
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.rating-btn:hover:not(:disabled) {
+  border-color: var(--bs-primary);
+}
+.rating-btn.active {
+  border-width: 2px;
+}
+.rating-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.rating-btn i {
+  font-size: 1rem;
+}
+
+.rating-success.active {
+  border-color: var(--bs-success);
+  background: color-mix(in sRGB, var(--bs-success) 15%, var(--bs-body-bg));
+  color: var(--bs-success);
+}
+.rating-info.active {
+  border-color: var(--bs-info);
+  background: color-mix(in sRGB, var(--bs-info) 15%, var(--bs-body-bg));
+  color: var(--bs-info);
+}
+.rating-warning.active {
+  border-color: var(--bs-warning);
+  background: color-mix(in sRGB, var(--bs-warning) 15%, var(--bs-body-bg));
+  color: var(--bs-warning);
+}
+.rating-danger.active {
+  border-color: var(--bs-danger);
+  background: color-mix(in sRGB, var(--bs-danger) 15%, var(--bs-body-bg));
+  color: var(--bs-danger);
+}
+.rating-secondary.active {
+  border-color: var(--bs-secondary);
+  background: color-mix(in sRGB, var(--bs-secondary) 15%, var(--bs-body-bg));
+  color: var(--bs-secondary);
+}
+
+@media (max-width: 576px) {
+  .attendance-pill {
+    padding: 6px 12px;
+    font-size: 0.8125rem;
+  }
+  .rating-btn {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+  }
+}

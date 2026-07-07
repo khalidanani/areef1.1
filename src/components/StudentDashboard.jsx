@@ -1,0 +1,177 @@
+import React, { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import NotificationsBell from './NotificationsBell';
+
+export default function StudentDashboard() {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const [classes, setClasses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [joinCode, setJoinCode] = useState('');
+  const [joinError, setJoinError] = useState('');
+  const [joinSuccess, setJoinSuccess] = useState('');
+
+  useEffect(() => {
+    if (user) {
+      fetchEnrolledClasses();
+    }
+  }, [user]);
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/login');
+  };
+
+  async function fetchEnrolledClasses() {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('class_enrollments')
+      .select('class_id, classes(id, name, grade_level, teacher_id, teachers(full_name))')
+      .eq('student_id', user.id);
+      
+    if (!error && data) {
+      setClasses(data.map(item => item.classes));
+    }
+    setLoading(false);
+  }
+
+  async function handleJoinClass(e) {
+    e.preventDefault();
+    setJoinError('');
+    setJoinSuccess('');
+
+    if (!joinCode.trim()) return;
+
+    const { data: classData, error: classError } = await supabase
+      .from('classes')
+      .select('id, name')
+      .eq('join_code', joinCode.toUpperCase())
+      .single();
+
+    if (classError || !classData) {
+      setJoinError('كود الانضمام غير صحيح.');
+      return;
+    }
+
+    const { error: enrollError } = await supabase
+      .from('class_enrollments')
+      .insert({
+        student_id: user.id,
+        class_id: classData.id
+      });
+
+    if (enrollError) {
+      if (enrollError.code === '23505') {
+        setJoinError('أنت منضم إلى هذا الفصل مسبقاً.');
+      } else {
+        setJoinError('حدث خطأ أثناء الانضمام. حاول مرة أخرى.');
+      }
+    } else {
+      setJoinSuccess(`تم الانضمام بنجاح إلى فصل: ${classData.name}`);
+      setJoinCode('');
+      fetchEnrolledClasses();
+    }
+  }
+
+  const navigateToClass = (cls) => {
+    navigate(`/student-chat/${cls.id}`);
+  };
+
+  return (
+    <div className="container-fluid flex-grow-1 container-p-y">
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h4 className="fw-bold py-1 mb-1">
+            <span className="text-muted fw-light">الرئيسية /</span> لوحة الطالب
+          </h4>
+          <p className="text-muted mb-0">بوابة الطالب: فصولي وواجباتي</p>
+        </div>
+        <div className="d-flex align-items-center gap-3">
+          <NotificationsBell />
+        </div>
+      </div>
+
+      <div className="card mb-4 border border-primary">
+        <div className="card-header">
+          <h5 className="mb-0 text-primary">الانضمام لفصل جديد</h5>
+        </div>
+        <div className="card-body">
+          {joinError && <div className="alert alert-danger p-2 mb-3">{joinError}</div>}
+          {joinSuccess && <div className="alert alert-success p-2 mb-3">{joinSuccess}</div>}
+          
+          <form onSubmit={handleJoinClass} className="row g-3 align-items-end">
+            <div className="col-md-8 col-sm-12">
+              <label className="form-label">كود الانضمام</label>
+              <input 
+                type="text" 
+                className="form-control fw-bold"
+                style={{ letterSpacing: '2px' }}
+                value={joinCode} 
+                onChange={(e) => setJoinCode(e.target.value.toUpperCase())} 
+                required 
+                placeholder="مثال: A1B2C3"
+              />
+            </div>
+            <div className="col-md-4 col-sm-12">
+              <button type="submit" className="btn btn-secondary w-100">
+                <i className="ti tabler-login me-1"></i> انضمام
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <h5 className="mb-3 text-muted">فصولي الدراسية</h5>
+
+      {loading ? (
+        <div className="d-flex justify-content-center my-5">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">جاري التحميل...</span>
+          </div>
+        </div>
+      ) : classes.length === 0 ? (
+        <div className="text-center p-5 card border-dashed border-2">
+          <div className="avatar avatar-xl mx-auto mb-3">
+            <span className="avatar-initial rounded-circle bg-label-secondary">
+              <i className="ti tabler-school fs-2"></i>
+            </span>
+          </div>
+          <h6 className="text-muted">أنت لست منضماً لأي فصل بعد. استخدم كود الانضمام من معلمك لإضافة فصل.</h6>
+        </div>
+      ) : (
+        <div className="row g-4">
+          {classes.map(cls => (
+            <div key={cls.id} className="col-xl-4 col-lg-6 col-md-6">
+              <div 
+                className="card h-100 cursor-pointer hover-border-primary transition-all shadow-sm" 
+                onClick={() => navigateToClass(cls)}
+              >
+                <div className="card-body">
+                  <div className="d-flex align-items-center mb-3">
+                    <div className="avatar avatar-md me-3">
+                      <span className="avatar-initial rounded bg-label-primary">
+                        <i className="ti tabler-books fs-4"></i>
+                      </span>
+                    </div>
+                    <div>
+                      <h5 className="mb-0 fw-bold">{cls.name}</h5>
+                      <small className="text-muted">المرحلة: {cls.grade_level}</small>
+                    </div>
+                  </div>
+                  <div className="mb-4">
+                    <p className="mb-1"><i className="ti tabler-user me-1 text-muted"></i> المعلم: <strong>{cls.teachers?.full_name}</strong></p>
+                  </div>
+                  <button className="btn btn-label-primary w-100">
+                    دخول الفصل وحل الواجبات <i className="ti tabler-arrow-left ms-1"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
