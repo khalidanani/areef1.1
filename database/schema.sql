@@ -11,6 +11,7 @@ CREATE TABLE teachers (
     full_name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
     school_name TEXT,
+    max_classes INTEGER DEFAULT 1,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
@@ -19,6 +20,24 @@ CREATE TABLE students (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     full_name TEXT NOT NULL,
     student_code TEXT UNIQUE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- المشتريات: المواد التي اشتراها المعلم
+CREATE TABLE teacher_book_purchases (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    teacher_id UUID NOT NULL REFERENCES teachers(id) ON DELETE CASCADE,
+    book_id UUID NOT NULL, -- references books(id), but we'll add foreign key after books table is created
+    purchased_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    UNIQUE(teacher_id, book_id)
+);
+
+-- الكوبونات (Coupons)
+CREATE TABLE coupons (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    code TEXT UNIQUE NOT NULL,
+    discount_percentage INTEGER NOT NULL DEFAULT 100,
+    is_active BOOLEAN DEFAULT true,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
@@ -86,10 +105,16 @@ ALTER TABLE books ENABLE ROW LEVEL SECURITY;
 ALTER TABLE chapters ENABLE ROW LEVEL SECURITY;
 ALTER TABLE lessons ENABLE ROW LEVEL SECURITY;
 ALTER TABLE questions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE teacher_book_purchases ENABLE ROW LEVEL SECURITY;
+ALTER TABLE coupons ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Teachers can view their own data" ON teachers FOR SELECT USING (auth.uid() = id);
 CREATE POLICY "Teachers can manage their own classes" ON classes FOR ALL USING (auth.uid() = teacher_id);
+CREATE POLICY "Teachers can view their own purchases" ON teacher_book_purchases FOR SELECT USING (auth.uid() = teacher_id);
+CREATE POLICY "Teachers can insert purchases" ON teacher_book_purchases FOR INSERT WITH CHECK (auth.uid() = teacher_id);
+
 CREATE POLICY "Anyone can read books" ON books FOR SELECT USING (true);
 CREATE POLICY "Anyone can read chapters" ON chapters FOR SELECT USING (true);
 CREATE POLICY "Anyone can read lessons" ON lessons FOR SELECT USING (true);
 CREATE POLICY "Anyone can read questions" ON questions FOR SELECT USING (true);
+CREATE POLICY "Anyone can read active coupons" ON coupons FOR SELECT USING (is_active = true);

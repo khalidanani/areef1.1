@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { Book, ChevronLeft, ChevronDown, CheckCircle, X, Sparkles } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import AIExtractor from './AIExtractor';
 import NotificationsBell from './NotificationsBell';
 
@@ -18,6 +18,7 @@ export default function CurriculumBank() {
   
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const [selectedQuestions, setSelectedQuestions] = useState(new Set());
   const [loading, setLoading] = useState(true);
@@ -30,12 +31,28 @@ export default function CurriculumBank() {
 
   useEffect(() => {
     fetchBooks();
-  }, []);
+    const cid = searchParams.get('classId');
+    if (cid) setSelectedClassId(cid);
+  }, [searchParams]);
 
   async function fetchBooks() {
     setLoading(true);
-    const { data, error } = await supabase.from('books').select('*');
-    if (!error && data) setBooks(data);
+    try {
+      const { data: booksData } = await supabase.from('books').select('*');
+      
+      let purchasedIds = [];
+      if (user) {
+        const { data: purchases } = await supabase.from('teacher_book_purchases').select('book_id').eq('teacher_id', user.id);
+        if (purchases) purchasedIds = purchases.map(p => p.book_id);
+      }
+
+      if (booksData) {
+        const availableBooks = booksData.filter(b => b.is_free || purchasedIds.includes(b.id));
+        setBooks(availableBooks);
+      }
+    } catch (error) {
+      console.error(error);
+    }
     setLoading(false);
   }
 
@@ -177,7 +194,15 @@ export default function CurriculumBank() {
                 <h5 className="card-title mb-0">المقررات الدراسية</h5>
               </div>
               <div className="card-body p-0">
-                <ul className="list-group list-group-flush rounded-0">
+                {books.length === 0 ? (
+                  <div className="p-4 text-center text-muted">
+                    <p>لا توجد مناهج متاحة لك حالياً.</p>
+                    <button className="btn btn-sm btn-outline-primary mt-2" onClick={() => navigate('/store')}>
+                      الذهاب للمتجر لشراء المناهج
+                    </button>
+                  </div>
+                ) : (
+                  <ul className="list-group list-group-flush rounded-0">
                   {books.map(book => (
                     <li key={book.id} className="list-group-item border-0 p-3 pb-0">
                       <button 
@@ -222,7 +247,8 @@ export default function CurriculumBank() {
                       )}
                     </li>
                   ))}
-                </ul>
+                  </ul>
+                )}
               </div>
             </div>
           </div>

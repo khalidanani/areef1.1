@@ -6,13 +6,15 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [userRole, setUserRole] = useState(null); // 'teacher', 'student', 'new', or null
+  const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const checkUserRole = async (userId) => {
     // Check teacher
-    const { data: teacherData } = await supabase.from('teachers').select('id').eq('id', userId).single();
+    const { data: teacherData } = await supabase.from('teachers').select('id, is_admin').eq('id', userId).single();
     if (teacherData) {
       setUserRole('teacher');
+      setIsAdmin(teacherData.is_admin === true);
       return;
     }
     // Check student
@@ -31,6 +33,7 @@ export function AuthProvider({ children }) {
         checkUserRole(session.user.id).then(() => setLoading(false));
       } else {
         setUserRole(null);
+        setIsAdmin(false);
         setLoading(false);
       }
     });
@@ -126,6 +129,7 @@ export function AuthProvider({ children }) {
     signOut,
     user,
     userRole,
+    isAdmin,
     checkUserRole,
   };
 

@@ -18,6 +18,9 @@ export default function TeacherDashboard() {
   const [subscription, setSubscription] = useState(null);
   const [invoices, setInvoices] = useState([]);
   const [showInvoices, setShowInvoices] = useState(false);
+  const [showRoster, setShowRoster] = useState(null);
+  const [rosterData, setRosterData] = useState([]);
+  const [loadingRoster, setLoadingRoster] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -98,6 +101,22 @@ export default function TeacherDashboard() {
       setReportsData(data);
     }
     setLoadingReports(false);
+  }
+
+  async function openRoster(cls) {
+    setShowRoster(cls);
+    setLoadingRoster(true);
+    
+    // Fetch students in this class
+    const { data, error } = await supabase
+      .from('class_enrollments')
+      .select('*, student:students(*)')
+      .eq('class_id', cls.id);
+      
+    if (!error && data) {
+      setRosterData(data);
+    }
+    setLoadingRoster(false);
   }
 
   return (
@@ -200,9 +219,20 @@ export default function TeacherDashboard() {
                     </div>
                   </div>
 
-                  <div className="d-flex gap-2">
-                    <button className="btn btn-label-secondary flex-grow-1">الواجبات</button>
-                    <button onClick={() => openReports(cls)} className="btn btn-success flex-grow-1">التقارير والتصحيح</button>
+                  <div className="d-flex gap-2 mt-3 flex-column">
+                    <div className="d-flex gap-2">
+                      <Link to={`/curriculum?classId=${cls.id}`} className="btn btn-primary flex-grow-1">
+                        <i className="ti tabler-book me-1"></i> المناهج والواجبات
+                      </Link>
+                    </div>
+                    <div className="d-flex gap-2">
+                      <button onClick={() => openRoster(cls)} className="btn btn-label-primary flex-grow-1">
+                        <i className="ti tabler-users me-1"></i> كشف الطلاب
+                      </button>
+                      <button onClick={() => openReports(cls)} className="btn btn-success flex-grow-1">
+                        <i className="ti tabler-report-analytics me-1"></i> الإحصائيات
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -322,6 +352,64 @@ export default function TeacherDashboard() {
                             <td>
                               <span className="badge bg-label-success">مدفوع</span>
                             </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Roster Modal */}
+      {showRoster && (
+        <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-lg modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title text-primary fw-bold">كشف طلاب فصل: {showRoster.name}</h5>
+                <button type="button" className="btn-close" onClick={() => setShowRoster(null)}></button>
+              </div>
+              <div className="modal-body p-0">
+                {loadingRoster ? (
+                  <div className="d-flex justify-content-center py-5">
+                    <div className="spinner-border text-primary" role="status"></div>
+                  </div>
+                ) : rosterData.length === 0 ? (
+                  <div className="text-center py-5">
+                    <p className="text-muted mb-0">لا يوجد طلاب في هذا الفصل بعد.</p>
+                    <p className="small text-primary mt-2">شارك كود الانضمام: <strong>{showRoster.join_code}</strong> مع طلابك</p>
+                  </div>
+                ) : (
+                  <div className="table-responsive">
+                    <table className="table table-hover mb-0">
+                      <thead className="table-light">
+                        <tr>
+                          <th>اسم الطالب</th>
+                          <th>الكود المدرسي</th>
+                          <th>رقم الجوال</th>
+                          <th>تاريخ الانضمام</th>
+                        </tr>
+                      </thead>
+                      <tbody className="table-border-bottom-0">
+                        {rosterData.map(enrollment => (
+                          <tr key={enrollment.student_id}>
+                            <td className="fw-semibold">
+                              <div className="d-flex align-items-center">
+                                <div className="avatar avatar-sm me-2">
+                                  <span className="avatar-initial rounded-circle bg-label-primary">
+                                    {enrollment.student?.full_name?.charAt(0) || '?'}
+                                  </span>
+                                </div>
+                                {enrollment.student?.full_name}
+                              </div>
+                            </td>
+                            <td>{enrollment.student?.student_code || '-'}</td>
+                            <td>{enrollment.student?.phone || 'غير مسجل'}</td>
+                            <td><small>{new Date(enrollment.joined_at).toLocaleDateString('ar-SA')}</small></td>
                           </tr>
                         ))}
                       </tbody>

@@ -5,7 +5,10 @@ import CurriculumBank from './components/CurriculumBank'
 import StudentChat from './components/StudentChat'
 import StudentDashboard from './components/StudentDashboard'
 import RoleSelection from './components/RoleSelection'
-import PricingPlans from './components/PricingPlans'
+import Store from './components/Store'
+import AdminSettings from './components/AdminSettings'
+import UserProfile from './components/UserProfile'
+import Support from './components/Support'
 import PWAInstallPrompt from './components/PWAInstallPrompt'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import LayoutWrapper from './components/layout/LayoutWrapper'
@@ -57,7 +60,10 @@ function AppRoutes() {
         <Route path="/curriculum" element={<ProtectedRoute><CurriculumBank /></ProtectedRoute>} />
         <Route path="/student-dashboard" element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>} />
         <Route path="/student-chat/:classId" element={<ProtectedRoute><StudentChat /></ProtectedRoute>} />
-        <Route path="/pricing" element={<ProtectedRoute><PricingPlans /></ProtectedRoute>} />
+        <Route path="/store" element={<ProtectedRoute><Store /></ProtectedRoute>} />
+        <Route path="/admin" element={<ProtectedRoute><AdminSettings /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
+        <Route path="/support" element={<ProtectedRoute><Support /></ProtectedRoute>} />
       </Routes>
       <PWAInstallPrompt />
     </LayoutWrapper>
