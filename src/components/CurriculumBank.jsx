@@ -54,6 +54,20 @@ export default function CurriculumBank() {
     if (data) setQuestions(data);
   }
 
+  const parseOptions = (options) => {
+    if (!options) return [];
+    if (Array.isArray(options)) return options;
+    try {
+      if (typeof options === 'string') {
+        const parsed = JSON.parse(options);
+        return Array.isArray(parsed) ? parsed : [];
+      }
+    } catch (e) {
+      console.warn("Failed to parse options:", options);
+    }
+    return [];
+  };
+
   const handleBookClick = (book) => {
     setSelectedBook(book);
     setSelectedChapter(null);
@@ -270,9 +284,9 @@ export default function CurriculumBank() {
                                   </div>
                                 )}
                                 
-                                {q.options && (
+                                {q.options && parseOptions(q.options).length > 0 && (
                                   <div className="row g-2 mb-3">
-                                    {JSON.parse(q.options).map((opt, i) => (
+                                    {parseOptions(q.options).map((opt, i) => (
                                       <div key={i} className="col-6">
                                         <div className="p-2 border rounded text-center bg-lighter">
                                           {opt}
