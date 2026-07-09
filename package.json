@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node -e \"require('fs').copyFileSync('dist/index.html', 'dist/404.html')\"",
+    "build": "vite build && node copy.cjs",
     "lint": "oxlint",
     "preview": "vite preview",
     "predeploy": "npm run build",
