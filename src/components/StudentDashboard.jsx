@@ -93,32 +93,25 @@ export default function StudentDashboard() {
         </div>
       </div>
 
-      <div className="card mb-4 border border-primary">
-        <div className="card-header">
-          <h5 className="mb-0 text-primary">الانضمام لفصل جديد</h5>
-        </div>
-        <div className="card-body">
-          {joinError && <div className="alert alert-danger p-2 mb-3">{joinError}</div>}
-          {joinSuccess && <div className="alert alert-success p-2 mb-3">{joinSuccess}</div>}
+      <div className="card mb-4 mt-2">
+        <div className="card-body p-3">
+          <h6 className="mb-2 text-primary fw-bold"><i className="ti tabler-plus me-1"></i> الانضمام لفصل جديد</h6>
+          {joinError && <div className="alert alert-danger p-2 mb-2 small">{joinError}</div>}
+          {joinSuccess && <div className="alert alert-success p-2 mb-2 small">{joinSuccess}</div>}
           
-          <form onSubmit={handleJoinClass} className="row g-3 align-items-end">
-            <div className="col-md-8 col-sm-12">
-              <label className="form-label">كود الانضمام</label>
-              <input 
-                type="text" 
-                className="form-control fw-bold"
-                style={{ letterSpacing: '2px' }}
-                value={joinCode} 
-                onChange={(e) => setJoinCode(e.target.value.toUpperCase())} 
-                required 
-                placeholder="مثال: A1B2C3"
-              />
-            </div>
-            <div className="col-md-4 col-sm-12">
-              <button type="submit" className="btn btn-secondary w-100">
-                <i className="ti tabler-login me-1"></i> انضمام
-              </button>
-            </div>
+          <form onSubmit={handleJoinClass} className="d-flex gap-2 align-items-center">
+            <input 
+              type="text" 
+              className="form-control form-control-lg fw-bold flex-grow-1"
+              style={{ letterSpacing: '2px', background: 'var(--bg-color)', border: 'none', borderRadius: 'var(--radius-xl)' }}
+              value={joinCode} 
+              onChange={(e) => setJoinCode(e.target.value.toUpperCase())} 
+              required 
+              placeholder="كود الفصل..."
+            />
+            <button type="submit" className="btn btn-primary rounded-circle p-0 d-flex justify-content-center align-items-center" style={{ width: '45px', height: '45px', flexShrink: 0 }}>
+              <i className="ti tabler-send fs-5"></i>
+            </button>
           </form>
         </div>
       </div>

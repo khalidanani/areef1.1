@@ -35,11 +35,11 @@ export default function LayoutWrapper({ children }) {
 
       </div>
 
-      <BottomNav toggleMenu={toggleMenu} />
+      <BottomNav />
 
-      {/* Overlay for mobile sidebar */}
+      {/* Overlay for desktop sidebar only if needed */}
       <div 
-        className={`layout-overlay layout-menu-toggle ${isMenuExpanded ? 'd-block' : ''}`}
+        className={`layout-overlay layout-menu-toggle ${isMenuExpanded ? 'd-block' : ''} d-none d-xl-block`}
         onClick={toggleMenu}
       ></div>
     </div>
