@@ -80,16 +80,25 @@ export default function NotificationsBell() {
   const unreadCount = notifications.filter(n => !n.is_read).length;
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="position-relative d-inline-block" ref={dropdownRef} style={{ lineHeight: 1 }}>
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-        style={{ color: 'var(--text-primary)' }}
+        className="btn btn-icon btn-text-secondary rounded-circle position-relative"
+        style={{ 
+          color: 'var(--text-primary)', 
+          width: '40px', 
+          height: '40px',
+          border: 'none',
+          background: 'transparent',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
         title="الإشعارات"
       >
-        <Bell size={24} strokeWidth={1.5} />
+        <Bell size={22} strokeWidth={1.8} />
         {unreadCount > 0 && (
-          <span className="absolute top-0 right-0 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full border-2 border-white dark:border-gray-900" style={{ transform: 'translate(25%, -25%)' }}>
+          <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style={{ fontSize: '0.65rem', padding: '0.25em 0.4em' }}>
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
@@ -97,54 +106,61 @@ export default function NotificationsBell() {
 
       {isOpen && (
         <div 
-          className="absolute left-0 mt-2 w-80 rounded-xl shadow-xl z-50 overflow-hidden border border-gray-100 dark:border-gray-800"
+          className="position-absolute mt-2 shadow border"
           style={{ 
-            backgroundColor: 'var(--bg-card)', 
-            color: 'var(--text-primary)',
-            right: 'auto', // For RTL layout, dropdown should anchor to the right visually, but since we are in RTL, left-0 means visual right
-            transform: 'translateX(25%)'
+            backgroundColor: 'var(--bg-color, #ffffff)', 
+            color: 'var(--text-primary, #333333)',
+            width: '320px',
+            borderRadius: '12px',
+            zIndex: 1050,
+            left: 0,
+            right: 'auto', // LTR override since it might be in RTL
+            transform: 'translateX(-25%)', // Slight adjustment for better alignment
+            overflow: 'hidden'
           }}
         >
-          <div className="p-4 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50 dark:bg-gray-800/50">
-            <h3 className="font-bold m-0" style={{ fontSize: '1rem' }}>الإشعارات</h3>
+          <div className="p-3 border-bottom d-flex justify-content-between align-items-center" style={{ backgroundColor: 'rgba(0,0,0,0.02)' }}>
+            <h6 className="m-0 fw-bold">الإشعارات</h6>
             {unreadCount > 0 && (
               <button 
                 onClick={markAllAsRead}
-                className="text-xs text-blue-500 hover:text-blue-700 font-medium"
+                className="btn btn-sm btn-link text-primary p-0 text-decoration-none"
+                style={{ fontSize: '0.8rem' }}
               >
                 تحديد الكل كمقروء
               </button>
             )}
           </div>
           
-          <div className="max-h-96 overflow-y-auto">
+          <div style={{ maxHeight: '350px', overflowY: 'auto' }}>
             {notifications.length === 0 ? (
-              <div className="p-6 text-center text-gray-500">
-                <p>لا توجد إشعارات حالياً</p>
+              <div className="p-4 text-center text-muted small">
+                <p className="m-0">لا توجد إشعارات حالياً</p>
               </div>
             ) : (
               notifications.map(notification => (
                 <div 
                   key={notification.id} 
                   onClick={() => markAsRead(notification.id)}
-                  className={`p-4 border-b border-gray-50 dark:border-gray-800/50 cursor-pointer transition-colors ${notification.is_read ? 'opacity-70 hover:bg-gray-50 dark:hover:bg-gray-800/50' : 'bg-blue-50/50 dark:bg-blue-900/20 hover:bg-blue-50 dark:hover:bg-blue-900/30'}`}
+                  className={`p-3 border-bottom cursor-pointer ${notification.is_read ? 'bg-transparent opacity-75' : 'bg-primary-subtle'}`}
+                  style={{ transition: 'background-color 0.2s' }}
                 >
-                  <div className="flex justify-between items-start mb-1">
-                    <h4 className={`text-sm font-bold ${notification.is_read ? 'text-gray-700 dark:text-gray-300' : 'text-blue-600 dark:text-blue-400'}`}>
+                  <div className="d-flex justify-content-between align-items-start mb-1">
+                    <h6 className={`mb-0 small fw-bold ${notification.is_read ? 'text-muted' : 'text-primary'}`}>
                       {notification.title}
-                    </h4>
+                    </h6>
                     {!notification.is_read && (
-                      <span className="w-2 h-2 rounded-full bg-blue-500 mt-1"></span>
+                      <span className="bg-primary rounded-circle" style={{ width: '8px', height: '8px', marginTop: '4px' }}></span>
                     )}
                   </div>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 m-0 leading-relaxed">
+                  <p className="small text-muted m-0 mt-1" style={{ lineHeight: '1.4' }}>
                     {notification.message}
                   </p>
-                  <span className="text-[10px] text-gray-400 mt-2 block">
+                  <small className="text-muted d-block mt-2" style={{ fontSize: '0.7rem' }}>
                     {new Date(notification.created_at).toLocaleString('ar-SA', { 
                       month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' 
                     })}
-                  </span>
+                  </small>
                 </div>
               ))
             )}
