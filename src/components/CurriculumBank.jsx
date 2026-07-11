@@ -100,9 +100,16 @@ export default function CurriculumBank() {
     fetchLessons(chapter.id);
   };
 
+  const questionsRef = React.useRef(null);
+
   const handleLessonClick = (lesson) => {
     setSelectedLesson(lesson);
     fetchQuestions(lesson.id);
+    if (window.innerWidth < 992 && questionsRef.current) {
+      setTimeout(() => {
+        questionsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
   };
 
   const toggleQuestion = (questionId) => {
@@ -253,7 +260,7 @@ export default function CurriculumBank() {
             </div>
           </div>
 
-          <div className="col-lg-8 col-md-7">
+          <div className="col-lg-8 col-md-7" ref={questionsRef}>
             <div className="card h-100">
               {selectedLesson ? (
                 <>
