@@ -41,7 +41,8 @@ serve(async (req) => {
           try {
             for await (const chunk of result.stream) {
               const chunkText = chunk.text();
-              controller.enqueue(new TextEncoder().encode(chunkText));
+              const sseData = `data: ${JSON.stringify({ text: chunkText })}\n\n`;
+              controller.enqueue(new TextEncoder().encode(sseData));
             }
             controller.close();
           } catch (e) {
@@ -51,7 +52,12 @@ serve(async (req) => {
       });
 
       return new Response(stream, {
-        headers: { ...corsHeaders, 'Content-Type': 'text/plain' },
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive'
+        },
         status: 200,
       })
     } 

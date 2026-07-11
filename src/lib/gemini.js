@@ -62,13 +62,32 @@ export async function sendMessage(questionId, message, onChunk) {
     const reader = response.body.getReader();
     const decoder = new TextDecoder('utf-8');
     let fullText = '';
+    let buffer = '';
 
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
-      const chunk = decoder.decode(value, { stream: true });
-      fullText += chunk;
-      if (onChunk) onChunk(fullText);
+      
+      buffer += decoder.decode(value, { stream: true });
+      
+      // SSE sends data separated by double newlines
+      const lines = buffer.split('\n\n');
+      buffer = lines.pop(); // Keep the last incomplete chunk in the buffer
+      
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          const dataStr = line.slice(6);
+          try {
+            const parsed = JSON.parse(dataStr);
+            if (parsed.text) {
+              fullText += parsed.text;
+              if (onChunk) onChunk(fullText);
+            }
+          } catch (e) {
+            console.warn('Failed to parse SSE chunk:', dataStr);
+          }
+        }
+      }
     }
 
     // Update history
