@@ -19,7 +19,7 @@ const UserProfile = lazy(() => import('./components/UserProfile'));
 const Support = lazy(() => import('./components/Support'));
 
 function ProtectedRoute({ children, allowedRoles }) {
-  const { user, userRole } = useAuth();
+  const { user, userRole, userRoles } = useAuth();
   
   if (!user) {
     return (
@@ -31,10 +31,15 @@ function ProtectedRoute({ children, allowedRoles }) {
   }
 
   // If user has a role, check if they are authorized for this route
-  if (allowedRoles && userRole && !allowedRoles.includes(userRole)) {
-    if (userRole === 'teacher') return <Navigate to="/teacher-dashboard" replace />;
-    if (userRole === 'student') return <Navigate to="/student-dashboard" replace />;
-    if (userRole === 'new') return <Navigate to="/role-selection" replace />;
+  const roles = userRoles && userRoles.length > 0 ? userRoles : (userRole ? [userRole] : []);
+  
+  if (allowedRoles && roles.length > 0) {
+    const hasRole = allowedRoles.some(r => roles.includes(r));
+    if (!hasRole) {
+      if (roles.includes('teacher')) return <Navigate to="/teacher-dashboard" replace />;
+      if (roles.includes('student')) return <Navigate to="/student-dashboard" replace />;
+      if (roles.includes('new')) return <Navigate to="/role-selection" replace />;
+    }
   }
 
   return children;

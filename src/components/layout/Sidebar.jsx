@@ -6,11 +6,12 @@ import areefMascot from '../../assets/areef_mascot.png';
 
 export default function Sidebar({ toggleMenu }) {
   const location = useLocation();
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, userRoles, userRole } = useAuth();
   const path = location.pathname;
 
-  const isTeacher = user?.user_metadata?.role === 'teacher' || !user?.user_metadata?.role; // Default
-  const isStudent = user?.user_metadata?.role === 'student';
+  const roles = userRoles && userRoles.length > 0 ? userRoles : (userRole ? [userRole] : []);
+  const isTeacher = roles.includes('teacher') || (!roles.includes('student') && !roles.includes('new')); // Default to teacher if missing
+  const isStudent = roles.includes('student');
 
   const [theme, setTheme] = useState(localStorage.getItem('areef_theme') || 'light');
 

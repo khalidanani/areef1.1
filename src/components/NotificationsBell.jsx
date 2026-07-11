@@ -83,13 +83,13 @@ export default function NotificationsBell() {
     <div className="position-relative d-inline-block" ref={dropdownRef} style={{ lineHeight: 1 }}>
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="btn btn-icon btn-text-secondary rounded-circle position-relative"
+        className="btn btn-icon rounded-circle position-relative"
         style={{ 
-          color: 'var(--text-primary)', 
+          color: '#566a7f', 
           width: '40px', 
           height: '40px',
           border: 'none',
-          background: 'transparent',
+          background: 'rgba(0,0,0,0.05)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center'

@@ -5,25 +5,34 @@ const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [userRole, setUserRole] = useState(null); // 'teacher', 'student', 'new', or null
+  const [userRole, setUserRole] = useState(null); // Primary role
+  const [userRoles, setUserRoles] = useState([]); // Array of all roles: ['teacher', 'student']
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const checkUserRole = async (userId) => {
+    let roles = [];
+    let is_admin = false;
+
     // Check teacher
     const { data: teacherData } = await supabase.from('teachers').select('id, is_admin').eq('id', userId).single();
     if (teacherData) {
-      setUserRole('teacher');
-      setIsAdmin(teacherData.is_admin === true);
-      return;
+      roles.push('teacher');
+      is_admin = teacherData.is_admin === true;
     }
     // Check student
     const { data: studentData } = await supabase.from('students').select('id').eq('id', userId).single();
     if (studentData) {
-      setUserRole('student');
-      return;
+      roles.push('student');
     }
-    setUserRole('new');
+    
+    if (roles.length === 0) {
+      roles.push('new');
+    }
+
+    setUserRoles(roles);
+    setUserRole(roles[0]); // Fallback for backward compatibility
+    setIsAdmin(is_admin);
   };
 
   useEffect(() => {
@@ -33,6 +42,7 @@ export function AuthProvider({ children }) {
         checkUserRole(session.user.id).then(() => setLoading(false));
       } else {
         setUserRole(null);
+        setUserRoles([]);
         setIsAdmin(false);
         setLoading(false);
       }
@@ -44,6 +54,7 @@ export function AuthProvider({ children }) {
         checkUserRole(session.user.id);
       } else {
         setUserRole(null);
+        setUserRoles([]);
       }
     });
 
@@ -129,6 +140,7 @@ export function AuthProvider({ children }) {
     signOut,
     user,
     userRole,
+    userRoles,
     isAdmin,
     checkUserRole,
   };

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import mascotImg from '../assets/areef_mascot.png';
 
 export default function Login() {
-  const { signInWithEmail, signInWithGoogle, signInWithMicrosoft, user, userRole } = useAuth();
+  const { signInWithEmail, signInWithGoogle, signInWithMicrosoft, user, userRole, userRoles } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -30,15 +30,17 @@ export default function Login() {
 
   React.useEffect(() => {
     if (user && userRole) {
-      if (userRole === 'teacher') {
+      const roles = userRoles && userRoles.length > 0 ? userRoles : [userRole];
+      
+      if (roles.includes('teacher')) {
         navigate('/teacher');
-      } else if (userRole === 'student') {
+      } else if (roles.includes('student')) {
         navigate('/student-dashboard');
-      } else if (userRole === 'new') {
+      } else if (roles.includes('new')) {
         navigate('/role-selection');
       }
     }
-  }, [user, userRole, navigate]);
+  }, [user, userRole, userRoles, navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
