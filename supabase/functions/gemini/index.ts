@@ -23,7 +23,7 @@ serve(async (req) => {
 
     if (action === 'chat') {
       const { history, message } = payload;
-      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
       
       const chat = model.startChat({
         history: history || [],
@@ -45,7 +45,7 @@ serve(async (req) => {
     
     else if (action === 'evaluate') {
       const { conversationLog, questionText, correctAnswer } = payload;
-      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
       
       const prompt = `أنت مقيّم تعليمي. بناءً على المحادثة التالية بين الطالب والمساعد الذكي "عريف"، قيّم أداء الطالب.
 السؤال: ${questionText}
@@ -73,7 +73,7 @@ ${conversationLog.map((m: any) => `${m.sender === 'user' ? 'الطالب' : 'ع�
 
     else if (action === 'extract') {
       const { imageBase64, mimeType } = payload;
-      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
       
       const imagePart = {
         inlineData: {
