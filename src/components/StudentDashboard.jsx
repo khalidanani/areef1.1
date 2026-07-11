@@ -14,37 +14,55 @@ export default function StudentDashboard() {
   const [inputValue, setInputValue] = useState('');
   const [isThinking, setIsThinking] = useState(false);
   const [currentChatId, setCurrentChatId] = useState(null);
+  const [classes, setClasses] = useState([]);
   const [homeworks, setHomeworks] = useState([]);
+  const [selectedClass, setSelectedClass] = useState(null);
   
   const messagesEndRef = useRef(null);
 
-  // Fetch homeworks for the empty state
   useEffect(() => {
     if (user) {
-      const fetchHomeworks = async () => {
-        const { data: enrollmentData } = await supabase.from('class_students').select('class_id').eq('student_id', user.id);
-        if (enrollmentData && enrollmentData.length > 0) {
-          const classIds = enrollmentData.map(e => e.class_id);
-          const { data } = await supabase.from('homeworks').select('*').in('class_id', classIds).order('created_at', { ascending: false }).limit(4);
-          if (data) setHomeworks(data);
+      const fetchClasses = async () => {
+        const { data } = await supabase.from('class_enrollments').select('class_id, classes(*)').eq('student_id', user.id);
+        if (data && data.length > 0) {
+          setClasses(data.map(e => e.classes));
+        } else {
+          setClasses([]);
         }
       };
-      fetchHomeworks();
+      fetchClasses();
     }
   }, [user]);
 
-  // Parse URL query parameter for chat ID
+  // Handle URL query parameters (chat ID or class ID)
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const chatId = params.get('chat');
+    const classIdParam = params.get('classId');
+    
     if (chatId) {
       setCurrentChatId(chatId);
       loadChatHistory(chatId);
+      setSelectedClass(null);
+    } else if (classIdParam && classes.length > 0) {
+      const cls = classes.find(c => c.id === classIdParam);
+      if (cls) {
+        setSelectedClass(cls);
+        fetchHomeworks(cls.id);
+      }
+      setCurrentChatId(null);
+      setMessages([]);
     } else {
       setCurrentChatId(null);
       setMessages([]);
+      setSelectedClass(null);
     }
-  }, [location.search]);
+  }, [location.search, classes]);
+
+  const fetchHomeworks = async (classId) => {
+    const { data } = await supabase.from('homeworks').select('*').eq('class_id', classId).order('created_at', { ascending: false });
+    if (data) setHomeworks(data);
+  };
 
   const loadChatHistory = async (chatId) => {
     const { data, error } = await supabase.from('student_chats').select('messages').eq('id', chatId).single();
@@ -155,23 +173,53 @@ export default function StudentDashboard() {
             أنا مساعدك الذكي عريف. يمكنك سؤالي عن أي موضوع دراسي، أو فتح القائمة الجانبية لحل واجباتك المدرسية المحددة.
           </p>
           
-          <div className="row g-3 w-100 max-w-3xl" style={{ maxWidth: '700px' }}>
-            {homeworks.length > 0 ? (
-              homeworks.map((hw, i) => (
+          <div className="row g-3 w-100 max-w-3xl" style={{ maxWidth: '800px' }}>
+            {selectedClass ? (
+              // Show Homeworks for Selected Class
+              <>
+                <div className="col-12 mb-2 text-center d-flex justify-content-center align-items-center gap-3">
+                  <button onClick={() => navigate('/student-dashboard')} className="btn btn-sm btn-outline-secondary rounded-circle" style={{ width: '32px', height: '32px', padding: 0 }}>
+                    <i className="ti tabler-arrow-right"></i>
+                  </button>
+                  <span className="badge bg-primary fs-6 px-3 py-2 rounded-pill">واجبات {selectedClass.name}</span>
+                </div>
+                {homeworks.length > 0 ? (
+                  homeworks.map((hw, i) => (
+                    <div key={i} className="col-12 col-md-6">
+                      <div 
+                        className="card border shadow-sm h-100 cursor-pointer hover-bg-light transition-all p-3 text-start"
+                        onClick={() => navigate(`/student-chat/${hw.class_id}?hw=${hw.id}`)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <div className="d-flex flex-column h-100 justify-content-between">
+                          <span className="text-primary fw-bold mb-2">📝 {hw.title}</span>
+                          <span className="text-muted" style={{ fontSize: '0.8rem' }}>انقر لبدء الحل مع عريف</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="col-12 text-center text-muted">لا توجد واجبات حالياً في هذا الفصل.</div>
+                )}
+              </>
+            ) : classes.length > 0 ? (
+              // Show Classes
+              classes.map((cls, i) => (
                 <div key={i} className="col-12 col-md-6">
                   <div 
-                    className="card border shadow-sm h-100 cursor-pointer hover-bg-light transition-all p-3 text-start"
-                    onClick={() => navigate(`/student-chat/${hw.class_id}?hw=${hw.id}`)}
+                    className="card border shadow-sm h-100 cursor-pointer hover-bg-light transition-all p-3 text-center"
+                    onClick={() => navigate(`/student-dashboard?classId=${cls.id}`)}
                     style={{ cursor: 'pointer' }}
                   >
-                    <div className="d-flex flex-column h-100 justify-content-between">
-                      <span className="text-primary fw-bold mb-2">📝 {hw.title}</span>
-                      <span className="text-muted" style={{ fontSize: '0.8rem' }}>انقر لبدء الحل مع عريف</span>
+                    <div className="d-flex flex-column align-items-center justify-content-center h-100 py-2">
+                      <span className="fs-1 mb-2">🎓</span>
+                      <span className="text-primary fw-bold">{cls.name}</span>
                     </div>
                   </div>
                 </div>
               ))
             ) : (
+              // Default Prompts if no classes
               ['اشرح لي مبدأ أرخميدس ببساطة', 'كيف أحل معادلة من الدرجة الثانية؟', 'اكتب لي تعبيراً عن بر الوالدين', 'ما هي عاصمة الدولة الأموية؟'].map((suggestion, i) => (
                 <div key={i} className="col-12 col-md-6">
                   <div 

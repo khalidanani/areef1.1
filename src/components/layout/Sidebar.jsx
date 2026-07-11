@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
-import { Terminal, Monitor, MessageSquare, Plus, Book, Clock, ChevronDown, ChevronUp } from 'lucide-react';
+import { Terminal, Monitor, MessageSquare, Plus, Book, Clock, ChevronDown, ChevronUp, Users, LogIn } from 'lucide-react';
 import areefMascot from '../../assets/areef_mascot.png';
+import { useToast } from '../../contexts/ToastContext';
 
 export default function Sidebar({ toggleMenu }) {
   const location = useLocation();
@@ -15,10 +16,13 @@ export default function Sidebar({ toggleMenu }) {
   const isTeacher = roles.includes('teacher') || (!roles.includes('student') && !roles.includes('new'));
   const isStudent = roles.includes('student');
 
+  const { toast } = useToast();
   const [theme, setTheme] = useState(localStorage.getItem('areef_theme') || 'light');
   const [chatHistory, setChatHistory] = useState([]);
-  const [hwExpanded, setHwExpanded] = useState(false);
-  const [homeworks, setHomeworks] = useState([]);
+  const [classesExpanded, setClassesExpanded] = useState(false);
+  const [classes, setClasses] = useState([]);
+  const [showJoinModal, setShowJoinModal] = useState(false);
+  const [joinCode, setJoinCode] = useState('');
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -29,10 +33,9 @@ export default function Sidebar({ toggleMenu }) {
     setTheme(theme === 'light' ? 'terminal' : 'light');
   };
 
-  useEffect(() => {
     if (isStudent && user) {
       fetchChatHistory();
-      fetchHomeworks();
+      fetchClasses();
     }
   }, [isStudent, user]);
 
@@ -45,13 +48,48 @@ export default function Sidebar({ toggleMenu }) {
     if (data) setChatHistory(data);
   };
 
-  const fetchHomeworks = async () => {
-    // In a real scenario, we fetch classes then homeworks. For now, fetch recent homeworks from student's classes.
-    const { data: enrollmentData } = await supabase.from('class_students').select('class_id').eq('student_id', user.id);
+  const fetchClasses = async () => {
+    const { data: enrollmentData } = await supabase.from('class_enrollments').select('class_id, classes(*)').eq('student_id', user.id);
     if (enrollmentData && enrollmentData.length > 0) {
-      const classIds = enrollmentData.map(e => e.class_id);
-      const { data } = await supabase.from('homeworks').select('*').in('class_id', classIds).order('created_at', { ascending: false }).limit(5);
-      if (data) setHomeworks(data);
+      setClasses(enrollmentData.map(e => e.classes));
+    } else {
+      setClasses([]);
+    }
+  };
+
+  const handleJoinClass = async (e) => {
+    e.preventDefault();
+    if (!joinCode.trim()) return;
+
+    // Find class by code
+    const { data: classData } = await supabase.from('classes').select('id, name').eq('join_code', joinCode.trim().toUpperCase()).single();
+    
+    if (!classData) {
+      toast.error('كود الفصل غير صحيح');
+      return;
+    }
+
+    // Check if already enrolled
+    const { data: existing } = await supabase.from('class_enrollments').select('*').eq('class_id', classData.id).eq('student_id', user.id).single();
+    if (existing) {
+      toast.error('أنت منضم لهذا الفصل مسبقاً');
+      return;
+    }
+
+    // Join
+    const { error } = await supabase.from('class_enrollments').insert({
+      class_id: classData.id,
+      student_id: user.id
+    });
+
+    if (error) {
+      toast.error('حدث خطأ أثناء الانضمام');
+    } else {
+      toast.success(`تم الانضمام إلى فصل ${classData.name} بنجاح!`);
+      setJoinCode('');
+      setShowJoinModal(false);
+      fetchClasses();
+      navigate('/student-dashboard'); // Refresh dashboard state if needed
     }
   };
 
@@ -60,34 +98,38 @@ export default function Sidebar({ toggleMenu }) {
     return (
       <aside id="layout-menu" className="layout-menu menu-vertical menu bg-dark text-white" style={{ backgroundColor: '#171717 !important' }}>
         <div className="p-3">
-          <Link to="/student-dashboard" className="btn btn-outline-light w-100 d-flex justify-content-start align-items-center gap-2" style={{ borderRadius: '8px', border: '1px solid #404040', color: 'white' }}>
+          <Link to="/student-dashboard" className="btn btn-outline-light w-100 d-flex justify-content-start align-items-center gap-2 mb-2" style={{ borderRadius: '8px', border: '1px solid #404040', color: 'white' }}>
             <Plus size={18} />
             <span className="fw-semibold">محادثة جديدة</span>
           </Link>
+          <button onClick={() => setShowJoinModal(true)} className="btn w-100 d-flex justify-content-start align-items-center gap-2" style={{ borderRadius: '8px', backgroundColor: 'rgba(255,255,255,0.1)', color: 'white', border: 'none' }}>
+            <LogIn size={18} />
+            <span className="fw-semibold">الانضمام لفصل</span>
+          </button>
         </div>
 
         <div className="menu-inner-shadow"></div>
 
-        <ul className="menu-inner py-1 overflow-auto" style={{ height: 'calc(100vh - 150px)' }}>
-          {/* Homeworks Section */}
+        <ul className="menu-inner py-1 overflow-auto" style={{ height: 'calc(100vh - 190px)' }}>
+          {/* Classes Section */}
           <li className="menu-item mt-2">
-            <a href="#!" className="menu-link text-white d-flex justify-content-between align-items-center" onClick={() => setHwExpanded(!hwExpanded)}>
+            <a href="#!" className="menu-link text-white d-flex justify-content-between align-items-center" onClick={() => setClassesExpanded(!classesExpanded)}>
               <div className="d-flex align-items-center gap-2">
-                <Book size={18} />
-                <span className="fw-semibold" style={{ fontSize: '0.85rem' }}>واجباتي المدرسية</span>
+                <Users size={18} />
+                <span className="fw-semibold" style={{ fontSize: '0.85rem' }}>فصولي</span>
               </div>
-              {hwExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              {classesExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
             </a>
-            {hwExpanded && (
+            {classesExpanded && (
               <ul className="menu-sub list-unstyled px-3 mt-2">
-                {homeworks.length === 0 ? (
-                  <li className="text-muted" style={{ fontSize: '0.8rem' }}>لا توجد واجبات حالياً</li>
+                {classes.length === 0 ? (
+                  <li className="text-muted" style={{ fontSize: '0.8rem' }}>لم تنضم لأي فصل</li>
                 ) : (
-                  homeworks.map(hw => (
-                    <li key={hw.id} className="mb-2">
-                      <Link to={`/student-chat/${hw.class_id}?hw=${hw.id}`} className="text-white text-decoration-none d-block p-2 hover-bg-secondary rounded" style={{ fontSize: '0.85rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        📝 {hw.title}
-                      </Link>
+                  classes.map(cls => (
+                    <li key={cls.id} className="mb-2">
+                      <button onClick={() => navigate(`/student-dashboard?classId=${cls.id}`)} className="btn btn-link text-white text-decoration-none d-block p-2 hover-bg-secondary rounded w-100 text-start" style={{ fontSize: '0.85rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        🎓 {cls.name}
+                      </button>
                     </li>
                   ))
                 )}
@@ -208,6 +250,39 @@ export default function Sidebar({ toggleMenu }) {
           </a>
         </li>
       </ul>
+
+      {/* Join Class Modal for Student Sidebar */}
+      {showJoinModal && (
+        <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1050 }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content text-dark">
+              <div className="modal-header">
+                <h5 className="modal-title fw-bold text-primary">الانضمام لفصل جديد</h5>
+                <button type="button" className="btn-close" onClick={() => setShowJoinModal(false)}></button>
+              </div>
+              <div className="modal-body">
+                <form onSubmit={handleJoinClass}>
+                  <div className="mb-4">
+                    <label className="form-label text-muted">أدخل كود الفصل (6 أحرف/أرقام)</label>
+                    <input 
+                      type="text" 
+                      className="form-control form-control-lg text-center fw-bold"
+                      value={joinCode}
+                      onChange={e => setJoinCode(e.target.value.toUpperCase())}
+                      maxLength={6}
+                      placeholder="ABCDEF"
+                      required
+                    />
+                  </div>
+                  <button type="submit" className="btn btn-primary w-100 btn-lg" disabled={joinCode.length < 6}>
+                    تأكيد الانضمام
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </aside>
   );
 }
