@@ -41,7 +41,7 @@ serve(async (req) => {
       messages.push({ role: 'user', content: message });
 
       const requestBody = {
-        model: "google/gemini-2.0-flash-lite-preview-02-05:free",
+        model: "google/gemma-4-31b-it:free",
         messages: messages,
         stream: true,
         temperature: 0.7,
@@ -131,7 +131,7 @@ ${conversationLog.map((m: any) => `${m.sender === 'user' ? 'الطالب' : 'ع�
 }`;
 
       const requestBody = {
-        model: "google/gemini-2.0-flash-lite-preview-02-05:free",
+        model: "google/gemma-4-31b-it:free",
         messages: [{ role: 'user', content: prompt }]
       };
 
@@ -170,7 +170,7 @@ ${conversationLog.map((m: any) => `${m.sender === 'user' ? 'الطالب' : 'ع�
 ]`;
 
       const requestBody = {
-        model: "google/gemini-flash-1.5-exp:free", // Must be a vision-capable model
+        model: "google/gemma-4-31b-it:free", // Must be a vision-capable model
         messages: [
           {
             role: "user",
