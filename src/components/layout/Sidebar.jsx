@@ -85,7 +85,7 @@ export default function Sidebar({ toggleMenu }) {
                 ) : (
                   homeworks.map(hw => (
                     <li key={hw.id} className="mb-2">
-                      <Link to={`/student-chat/${hw.class_id}`} className="text-white text-decoration-none d-block p-2 hover-bg-secondary rounded" style={{ fontSize: '0.85rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <Link to={`/student-chat/${hw.class_id}?hw=${hw.id}`} className="text-white text-decoration-none d-block p-2 hover-bg-secondary rounded" style={{ fontSize: '0.85rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         📝 {hw.title}
                       </Link>
                     </li>

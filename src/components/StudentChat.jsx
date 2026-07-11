@@ -1,13 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { isAIReady, sendMessage as sendAIMessage, evaluateConversation, clearChat, startChat } from '../lib/gemini';
-import { Send, Bot, User, CheckCircle, ArrowRight, Loader } from 'lucide-react';
-import NotificationsBell from './NotificationsBell';
+import { Send, Bot, User, Loader, Plus, Menu } from 'lucide-react';
+import areefMascot from '../assets/areef_mascot.png';
 
 export default function StudentChat() {
   const { classId } = useParams();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const hwId = searchParams.get('hw');
+
   const { user } = useAuth();
   const navigate = useNavigate();
   const [className, setClassName] = useState('');
@@ -45,6 +49,17 @@ export default function StudentChat() {
   }, [navigate, user, classId]);
 
   useEffect(() => {
+    if (hwId && homeworks.length > 0 && !activeHomework) {
+      const hw = homeworks.find(h => h.id === hwId);
+      if (hw) {
+        // Remove hw from URL so it doesn't auto-trigger again if they cancel
+        navigate(`/student-chat/${classId}`, { replace: true });
+        loadHomeworkQuestions(hw);
+      }
+    }
+  }, [hwId, homeworks, activeHomework, navigate, classId]);
+
+  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
@@ -74,7 +89,6 @@ export default function StudentChat() {
     setIsThinking(true);
     clearChat(q.id);
 
-    // Show question reference immediately
     let questionRef = '';
     if (q.page_number || q.exercise_number) {
       const parts = [];
@@ -83,14 +97,12 @@ export default function StudentChat() {
       questionRef = ` (${parts.join(' - ')})`;
     }
 
-    // Show question immediately (Instant)
     const initialText = `مرحباً بك! أنا عريف مساعدك الذكي 🤖. هيا لنحل معاً سؤال:\n\n**${q.question_text}**${questionRef}\n\nما هي إجابتك أو كيف تفكر في الحل؟`;
     
     setMessages([
       { sender: 'bot', text: initialText }
     ]);
     
-    // Initialize AI context silently in the background
     startChat(q.id, q.question_text, q.correct_answer, q.question_type, q.page_number, q.exercise_number);
     setIsThinking(false);
   }
@@ -105,7 +117,6 @@ export default function StudentChat() {
     setInputValue('');
     setIsThinking(true);
     
-    // Add placeholder for streaming response
     setMessages(prev => [...prev, { sender: 'bot', text: '' }]);
 
     if (isAIReady()) {
@@ -122,10 +133,9 @@ export default function StudentChat() {
         setMessages(prev => prev.slice(0, -1).concat({ sender: 'bot', text: `عذراً، حدث خطأ في الاتصال. حاول مرة أخرى 🔄\nتفاصيل الخطأ: ${error.message}` }));
       }
     } else {
-      // Fallback mock logic (if no API key)
       setTimeout(() => {
         const correctAnswer = currentQ.correct_answer;
-        if (userMsg.includes(correctAnswer) || (userMsg.match(/\d+/) && userMsg.match(/\d+/)[0] === correctAnswer.match(/\d+/)?.[0])) {
+        if (userMessage.includes(correctAnswer) || (userMessage.match(/\d+/) && userMessage.match(/\d+/)[0] === correctAnswer.match(/\d+/)?.[0])) {
           setMessages(prev => [...prev, { sender: 'bot', text: 'أحسنت! إجابة رائعة وصحيحة ✅ هل تريد الانتقال للسؤال التالي؟' }]);
         } else {
           setMessages(prev => [...prev, { sender: 'bot', text: 'محاولة جيدة! فكّر في المسألة مرة أخرى خطوة بخطوة 💡' }]);
@@ -137,19 +147,16 @@ export default function StudentChat() {
 
   const saveResponseAndGoNext = async () => {
     const currentQ = questions[currentQuestionIndex];
-    
     let grade = 0;
     let feedback = 'يحتاج إلى مراجعة';
 
     if (isAIReady()) {
       try {
-        // Use AI to evaluate the conversation
         const evaluation = await evaluateConversation(messages, currentQ.question_text, currentQ.correct_answer);
         grade = evaluation.grade || 0;
         feedback = evaluation.feedback || 'تم التقييم';
       } catch (e) {
         console.error('Evaluation error:', e);
-        // Fallback grading
         const hasCorrect = messages.some(m => m.text.includes('أحسنت'));
         grade = hasCorrect ? 8 : 3;
         feedback = hasCorrect ? 'أجاب بشكل صحيح' : 'يحتاج إلى مراجعة';
@@ -185,9 +192,8 @@ export default function StudentChat() {
       await startQuestionChat(nextQ);
     } else {
       setChatFinished(true);
-      setMessages([{ sender: 'bot', text: 'رائع جداً! لقد أنهيت جميع الأسئلة وتم حفظ إجاباتك بنجاح 🏆. يمكنك إغلاق هذه النافذة أو العودة للقائمة الرئيسية.' }]);
+      setMessages([{ sender: 'bot', text: 'رائع جداً! لقد أنهيت جميع الأسئلة وتم حفظ إجاباتك بنجاح 🏆. يمكنك إغلاق المحادثة متى شئت.' }]);
       
-      // Notify Teacher
       const { data: classData } = await supabase.from('classes').select('teacher_id').eq('id', classId).single();
       if (classData) {
         await supabase.from('notifications').insert({
@@ -203,157 +209,157 @@ export default function StudentChat() {
     saveResponseAndGoNext();
   };
 
-  const handleLogout = () => {
-    navigate('/student-dashboard');
-  };
-
   return (
-    <div className="container animate-fade-in" style={{ maxWidth: '900px' }}>
-      <header className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4 gap-3">
-        <div>
-          <h2 style={{ color: 'var(--primary-blue)', fontSize: '1.5rem', fontWeight: 'bold', margin: 0 }}>بوابة الطالب</h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', margin: 0 }}>الفصل: {className} | الطالب: {user?.user_metadata?.full_name || user?.email?.split('@')[0]}</p>
-        </div>
-        <div className="d-flex align-items-center gap-2 w-100 justify-content-between justify-content-sm-end">
-          <NotificationsBell />
-          <button onClick={handleLogout} className="btn btn-outline btn-sm">العودة للفصول</button>
-        </div>
-      </header>
+    <div className="d-flex flex-column h-100 position-relative bg-white" style={{ minHeight: 'calc(100vh - 80px)' }}>
+      {/* Top Mobile Bar */}
+      <div className="d-xl-none p-3 border-bottom d-flex justify-content-between align-items-center bg-white sticky-top">
+        <button className="btn btn-icon btn-text-secondary" onClick={() => document.getElementById('layout-menu')?.classList.toggle('layout-menu-expanded')}>
+          <Menu size={24} />
+        </button>
+        <div className="fw-bold fs-5 text-truncate" style={{ maxWidth: '60%' }}>{activeHomework?.title || 'عريف'}</div>
+        <button className="btn btn-icon btn-text-secondary" onClick={() => navigate('/student-dashboard')}>
+          <Plus size={24} />
+        </button>
+      </div>
 
       {!activeHomework ? (
-        <div className="card">
-          <h3 style={{ fontSize: '1.3rem', marginBottom: '1.5rem', color: 'var(--text-primary)' }}>الواجبات المطلوبة</h3>
-          {homeworks.length === 0 ? (
-            <p style={{ color: 'var(--text-secondary)' }}>لا توجد واجبات حالياً في هذا الفصل.</p>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {homeworks.map(hw => (
-                <div key={hw.id} onClick={() => loadHomeworkQuestions(hw)} style={{ padding: '1.5rem', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'all 0.2s ease' }} className="hover:bg-gray-50 flex-column flex-sm-row gap-3">
-                  <div className="text-center text-sm-start w-100">
-                    <h4 style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--primary-blue)', marginBottom: '0.2rem' }}>{hw.title}</h4>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>تاريخ النشر: {new Date(hw.created_at).toLocaleDateString('ar-SA')}</span>
+        /* Empty State: Select a homework */
+        <div className="flex-grow-1 d-flex flex-column justify-content-center align-items-center p-4 animate-fade-in text-center">
+          <img src={areefMascot} alt="عريف" className="rounded-circle shadow-sm mb-4" style={{ width: '80px', height: '80px' }} />
+          <h2 className="fw-bold mb-3 text-dark">واجبات فصل: {className}</h2>
+          <p className="text-muted mb-5" style={{ maxWidth: '500px' }}>
+            الرجاء اختيار أحد الواجبات للبدء بحله مع عريف.
+          </p>
+          
+          <div className="row g-3 w-100 max-w-3xl" style={{ maxWidth: '700px' }}>
+            {homeworks.length === 0 ? (
+              <p className="text-muted w-100 text-center">لا توجد واجبات حالياً في هذا الفصل.</p>
+            ) : (
+              homeworks.map(hw => (
+                <div key={hw.id} className="col-12 col-md-6">
+                  <div 
+                    className="card border shadow-sm h-100 cursor-pointer hover-bg-light transition-all p-3 text-start"
+                    onClick={() => loadHomeworkQuestions(hw)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <div className="d-flex flex-column h-100 justify-content-between">
+                      <span className="text-primary fw-bold mb-2">📝 {hw.title}</span>
+                      <span className="text-muted" style={{ fontSize: '0.8rem' }}>انقر لبدء الحل مع عريف</span>
+                    </div>
                   </div>
-                  <button className="btn btn-primary btn-sm w-100 w-sm-auto" style={{ borderRadius: '20px' }}>بدء الحل</button>
                 </div>
-              ))}
-            </div>
-          )}
+              ))
+            )}
+          </div>
         </div>
       ) : (
-        <div className="card" style={{ display: 'flex', flexDirection: 'column', height: 'min(600px, calc(100vh - 180px))', padding: 0, overflow: 'hidden' }}>
-          {/* Chat Header */}
-          <div style={{ padding: '0.75rem 1rem', backgroundColor: 'var(--primary-blue)', color: 'white', display: 'flex', flexWrap: 'wrap', gap: '0.5rem', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div className="flex gap-2 items-center">
-              <button onClick={() => setActiveHomework(null)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', padding: 0 }}><ArrowRight size={20} /></button>
-              <h3 style={{ margin: 0, fontWeight: 'bold', fontSize: '1.1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '150px' }}>{activeHomework.title}</h3>
-            </div>
-            <div className="flex gap-2 items-center">
-              {isAIReady() && <span style={{ fontSize: '0.65rem', backgroundColor: 'rgba(16,185,129,0.3)', padding: '0.2rem 0.5rem', borderRadius: '8px', whiteSpace: 'nowrap' }}>🟢 AI</span>}
-              <span style={{ fontSize: '0.8rem', backgroundColor: 'rgba(255,255,255,0.2)', padding: '0.2rem 0.6rem', borderRadius: '12px', whiteSpace: 'nowrap' }}>
-                سؤال {currentQuestionIndex + 1} / {questions.length}
-              </span>
-            </div>
+        /* Homework Chat View */
+        <div className="flex-grow-1 overflow-auto p-0 p-md-4 bg-light" style={{ paddingBottom: '120px !important' }}>
+          
+          {/* Status Bar for Homework Progress */}
+          <div className="mx-auto sticky-top d-none d-md-flex align-items-center justify-content-center pt-2 pb-3" style={{ maxWidth: '800px', zIndex: 10 }}>
+             <span className="badge bg-primary rounded-pill px-3 py-2 shadow-sm d-flex align-items-center gap-2">
+                سؤال {currentQuestionIndex + 1} من {questions.length}
+             </span>
           </div>
 
-          {/* Chat Messages */}
-          <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', backgroundColor: '#f8fafc' }}>
+          <div className="mx-auto" style={{ maxWidth: '800px' }}>
             {messages.map((msg, i) => (
-              <div key={i} className={`d-flex ${msg.sender === 'user' ? 'justify-content-end' : 'justify-content-start'} animate-fade-in`} style={{ animationDelay: '0.1s' }}>
-                <div style={{ 
-                  maxWidth: '85%', 
-                  padding: '0.85rem 1.2rem', 
-                  borderRadius: msg.sender === 'user' ? '20px 20px 0 20px' : '20px 20px 20px 0',
-                  backgroundColor: msg.sender === 'user' ? 'var(--primary-blue)' : '#ffffff',
-                  color: msg.sender === 'user' ? 'white' : 'var(--text-primary)',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                  border: msg.sender === 'user' ? 'none' : '1px solid var(--border-color)',
-                  position: 'relative'
-                }}>
-                  <div className="d-flex align-items-center gap-1 mb-1" style={{ opacity: 0.7, fontSize: '0.75rem', fontWeight: 600 }}>
-                    {msg.sender === 'bot' ? <Bot size={14} /> : <User size={14} />}
-                    <span>{msg.sender === 'bot' ? 'عريف' : 'أنت'}</span>
+              <div key={i} className={`d-flex p-4 ${msg.sender === 'user' ? 'justify-content-end bg-transparent' : 'justify-content-start bg-white border-bottom border-top'}`}>
+                <div className="d-flex gap-3 max-w-4xl w-100" style={{ flexDirection: msg.sender === 'user' ? 'row-reverse' : 'row' }}>
+                  <div className="flex-shrink-0">
+                    {msg.sender === 'bot' ? (
+                      <div className="bg-success bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style={{ width: '36px', height: '36px' }}>
+                        <Bot size={20} className="text-success" />
+                      </div>
+                    ) : (
+                      <div className="bg-primary rounded-circle d-flex align-items-center justify-content-center text-white fw-bold" style={{ width: '36px', height: '36px' }}>
+                        {user?.user_metadata?.full_name?.charAt(0) || <User size={20} />}
+                      </div>
+                    )}
                   </div>
-                  <p className="mb-0" style={{ lineHeight: '1.6', whiteSpace: 'pre-wrap', fontSize: '0.95rem' }}>{msg.text}</p>
-                  
-                  {/* Read receipt / timestamp placeholder for Telegram feel */}
-                  <div className="text-end mt-1" style={{ fontSize: '0.65rem', opacity: 0.6 }}>
-                    الآن {msg.sender === 'user' && <CheckCircle size={10} className="ms-1" />}
+                  <div className="flex-grow-1" style={{ paddingTop: '6px' }}>
+                    <p className="mb-0 text-dark" style={{ lineHeight: '1.7', whiteSpace: 'pre-wrap', fontSize: '1rem' }}>{msg.text}</p>
+                    
+                    {/* Next Question Button inside the last message if applicable */}
+                    {msg.sender === 'bot' && i === messages.length - 1 && msg.text.includes('أحسنت') && !chatFinished && currentQuestionIndex + 1 < questions.length && (
+                      <div className="mt-3">
+                        <button onClick={nextQuestion} className="btn btn-outline-success btn-sm rounded-pill px-4">
+                          الانتقال للسؤال التالي ➡️
+                        </button>
+                      </div>
+                    )}
+                    
+                    {msg.sender === 'bot' && i === messages.length - 1 && msg.text.includes('أحسنت') && !chatFinished && currentQuestionIndex + 1 >= questions.length && (
+                      <div className="mt-3">
+                        <button onClick={nextQuestion} className="btn btn-success btn-sm rounded-pill px-4">
+                          إنهاء الواجب وحفظ الدرجات ✅
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
             ))}
-
-            {/* Thinking indicator */}
+            
             {isThinking && (
-              <div className="d-flex justify-content-start animate-fade-in">
-                <div style={{ 
-                  padding: '0.8rem 1.2rem', 
-                  borderRadius: '20px 20px 20px 0', 
-                  backgroundColor: 'white', 
-                  border: '1px solid var(--border-color)', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '0.5rem',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
-                }}>
-                  <Loader size={16} style={{ animation: 'spin 1.5s linear infinite', color: 'var(--primary-blue)' }} />
-                  <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: 600 }}>عريف يكتب...</span>
-                </div>
+              <div className="d-flex p-4 bg-white border-bottom border-top justify-content-start">
+                 <div className="d-flex gap-3 max-w-4xl w-100">
+                  <div className="bg-success bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style={{ width: '36px', height: '36px' }}>
+                    <Loader size={18} className="text-success" style={{ animation: 'spin 1.5s linear infinite' }} />
+                  </div>
+                  <div className="flex-grow-1" style={{ paddingTop: '8px' }}>
+                    <span className="text-muted fw-semibold">عريف يكتب...</span>
+                  </div>
+                 </div>
               </div>
             )}
-            
-            {messages.length > 0 && messages[messages.length - 1].text.includes('أحسنت') && !chatFinished && currentQuestionIndex + 1 < questions.length && (
-              <button onClick={nextQuestion} className="btn btn-secondary" style={{ alignSelf: 'center', marginTop: '1rem' }}>
-                الانتقال للسؤال التالي ➡️
-              </button>
-            )}
-
-            {messages.length > 0 && messages[messages.length - 1].text.includes('أحسنت') && !chatFinished && currentQuestionIndex + 1 >= questions.length && (
-              <button onClick={nextQuestion} className="btn btn-secondary" style={{ alignSelf: 'center', marginTop: '1rem', backgroundColor: '#10b981', borderColor: '#10b981' }}>
-                إنهاء الواجب وحفظ الدرجات ✅
-              </button>
-            )}
-            
             <div ref={messagesEndRef} />
           </div>
+        </div>
+      )}
 
-          {/* Chat Input */}
-          <form onSubmit={handleSendMessage} style={{ padding: '0.75rem 1rem', backgroundColor: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(10px)', borderTop: '1px solid rgba(0,0,0,0.08)', display: 'flex', gap: '0.5rem', alignItems: 'flex-end' }}>
-            <textarea 
-              value={inputValue}
-              onChange={e => setInputValue(e.target.value)}
-              onKeyDown={e => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSendMessage(e);
-                }
-              }}
-              placeholder="اكتب رسالة..."
-              style={{ 
-                flex: 1, 
-                padding: '0.8rem 1rem', 
-                borderRadius: '24px', 
-                border: '1px solid var(--border-color)', 
-                outline: 'none',
-                resize: 'none',
-                minHeight: '45px',
-                maxHeight: '120px',
-                backgroundColor: '#f1f5f9',
-                fontFamily: 'inherit',
-                fontSize: '0.95rem'
-              }}
-              disabled={chatFinished || isThinking}
-              rows={1}
-            />
-            <button 
-              type="submit" 
-              className="btn btn-primary rounded-circle d-flex justify-content-center align-items-center" 
-              style={{ width: '45px', height: '45px', flexShrink: 0, transition: 'transform 0.2s' }}
-              disabled={chatFinished || isThinking || !inputValue.trim()}
-            >
-              <Send size={20} style={{ marginLeft: '-2px' }} />
-            </button>
-          </form>
+      {/* Input Area (Only show if homework is active) */}
+      {activeHomework && (
+        <div className="position-absolute bottom-0 start-0 w-100 bg-transparent p-3 p-md-4" style={{ background: 'linear-gradient(180deg, transparent, white 20%)' }}>
+          <div className="mx-auto" style={{ maxWidth: '800px' }}>
+            <form onSubmit={handleSendMessage} className="position-relative bg-white border shadow-sm" style={{ borderRadius: '24px' }}>
+              <textarea
+                value={inputValue}
+                onChange={e => setInputValue(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendMessage(e);
+                  }
+                }}
+                placeholder="أدخل إجابتك هنا..."
+                className="form-control border-0 bg-transparent shadow-none"
+                style={{ 
+                  padding: '1rem 3.5rem 1rem 1.5rem', 
+                  minHeight: '56px', 
+                  maxHeight: '200px', 
+                  resize: 'none',
+                  fontSize: '1rem'
+                }}
+                rows={1}
+                disabled={chatFinished || isThinking}
+              />
+              <button 
+                type="submit" 
+                className={`btn btn-icon position-absolute rounded-circle ${inputValue.trim() ? 'btn-primary' : 'btn-secondary'}`}
+                style={{ left: '8px', bottom: '8px', width: '40px', height: '40px', transition: 'all 0.2s' }}
+                disabled={!inputValue.trim() || isThinking || chatFinished}
+              >
+                <Send size={18} style={{ marginLeft: '-2px' }} />
+              </button>
+            </form>
+            <div className="text-center mt-2 d-md-none">
+              <span className="badge bg-primary rounded-pill px-2 py-1 shadow-sm opacity-75">
+                 سؤال {currentQuestionIndex + 1} من {questions.length}
+              </span>
+            </div>
+          </div>
         </div>
       )}
     </div>

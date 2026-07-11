@@ -14,8 +14,24 @@ export default function StudentDashboard() {
   const [inputValue, setInputValue] = useState('');
   const [isThinking, setIsThinking] = useState(false);
   const [currentChatId, setCurrentChatId] = useState(null);
+  const [homeworks, setHomeworks] = useState([]);
   
   const messagesEndRef = useRef(null);
+
+  // Fetch homeworks for the empty state
+  useEffect(() => {
+    if (user) {
+      const fetchHomeworks = async () => {
+        const { data: enrollmentData } = await supabase.from('class_students').select('class_id').eq('student_id', user.id);
+        if (enrollmentData && enrollmentData.length > 0) {
+          const classIds = enrollmentData.map(e => e.class_id);
+          const { data } = await supabase.from('homeworks').select('*').in('class_id', classIds).order('created_at', { ascending: false }).limit(4);
+          if (data) setHomeworks(data);
+        }
+      };
+      fetchHomeworks();
+    }
+  }, [user]);
 
   // Parse URL query parameter for chat ID
   useEffect(() => {
@@ -136,16 +152,34 @@ export default function StudentDashboard() {
           </p>
           
           <div className="row g-3 w-100 max-w-3xl" style={{ maxWidth: '700px' }}>
-            {['اشرح لي مبدأ أرخميدس ببساطة', 'كيف أحل معادلة من الدرجة الثانية؟', 'اكتب لي تعبيراً عن بر الوالدين', 'ما هي عاصمة الدولة الأموية؟'].map((suggestion, i) => (
-              <div key={i} className="col-12 col-md-6">
-                <div 
-                  className="card border shadow-none h-100 cursor-pointer hover-bg-light transition-all p-3 text-start"
-                  onClick={() => setInputValue(suggestion)}
-                >
-                  <span className="text-secondary fw-medium">{suggestion}</span>
+            {homeworks.length > 0 ? (
+              homeworks.map((hw, i) => (
+                <div key={i} className="col-12 col-md-6">
+                  <div 
+                    className="card border shadow-sm h-100 cursor-pointer hover-bg-light transition-all p-3 text-start"
+                    onClick={() => navigate(`/student-chat/${hw.class_id}?hw=${hw.id}`)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <div className="d-flex flex-column h-100 justify-content-between">
+                      <span className="text-primary fw-bold mb-2">📝 {hw.title}</span>
+                      <span className="text-muted" style={{ fontSize: '0.8rem' }}>انقر لبدء الحل مع عريف</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              ['اشرح لي مبدأ أرخميدس ببساطة', 'كيف أحل معادلة من الدرجة الثانية؟', 'اكتب لي تعبيراً عن بر الوالدين', 'ما هي عاصمة الدولة الأموية؟'].map((suggestion, i) => (
+                <div key={i} className="col-12 col-md-6">
+                  <div 
+                    className="card border shadow-none h-100 cursor-pointer hover-bg-light transition-all p-3 text-start"
+                    onClick={() => setInputValue(suggestion)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <span className="text-secondary fw-medium">{suggestion}</span>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       ) : (
