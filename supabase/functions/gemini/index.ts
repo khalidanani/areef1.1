@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { GoogleGenerativeAI } from "npm:@google/generative-ai"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -13,36 +12,87 @@ serve(async (req) => {
   }
 
   try {
+    // We reuse the existing GEMINI_API_KEY env var but it now holds the OpenRouter Key
     const apiKey = Deno.env.get('GEMINI_API_KEY');
     if (!apiKey) {
-      throw new Error('GEMINI_API_KEY is not set in environment variables');
+      throw new Error('API Key is not set in environment variables');
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
     const { action, payload } = await req.json();
+
+    const openRouterEndpoint = 'https://openrouter.ai/api/v1/chat/completions';
+    const defaultHeaders = {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+      'HTTP-Referer': 'https://areef-ai.com',
+      'X-Title': 'Areef'
+    };
 
     if (action === 'chat') {
       const { history, message } = payload;
-      const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
       
-      const chat = model.startChat({
-        history: history || [],
-        generationConfig: {
-          temperature: 0.7,
-          topP: 0.9,
-          maxOutputTokens: 500,
-        },
+      // Convert Gemini history format to OpenAI format
+      const messages = (history || []).map((h: any) => ({
+        role: h.role === 'model' ? 'assistant' : 'user',
+        content: h.parts ? h.parts[0].text : h.text
+      }));
+      
+      // Append the latest user message
+      messages.push({ role: 'user', content: message });
+
+      const requestBody = {
+        model: "meta-llama/llama-3.3-70b-instruct:free",
+        messages: messages,
+        stream: true,
+        temperature: 0.7,
+        max_tokens: 500,
+      };
+
+      const response = await fetch(openRouterEndpoint, {
+        method: 'POST',
+        headers: defaultHeaders,
+        body: JSON.stringify(requestBody)
       });
 
-      const result = await chat.sendMessageStream(message);
-      
+      if (!response.ok) {
+        throw new Error(`OpenRouter API error: ${await response.text()}`);
+      }
+
+      // Stream the response back to the client in SSE format
       const stream = new ReadableStream({
         async start(controller) {
+          const reader = response.body?.getReader();
+          if (!reader) return controller.close();
+          const decoder = new TextDecoder('utf-8');
+          let buffer = '';
+
           try {
-            for await (const chunk of result.stream) {
-              const chunkText = chunk.text();
-              const sseData = `data: ${JSON.stringify({ text: chunkText })}\n\n`;
-              controller.enqueue(new TextEncoder().encode(sseData));
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              
+              buffer += decoder.decode(value, { stream: true });
+              const lines = buffer.split('\n');
+              buffer = lines.pop() || '';
+              
+              for (let line of lines) {
+                line = line.trim();
+                if (!line) continue;
+                if (line.startsWith('data: ')) {
+                  const dataStr = line.slice(6);
+                  if (dataStr === '[DONE]') continue;
+                  try {
+                    const parsed = JSON.parse(dataStr);
+                    const chunkText = parsed.choices[0]?.delta?.content || '';
+                    if (chunkText) {
+                      const sseData = `data: ${JSON.stringify({ text: chunkText })}\n\n`;
+                      controller.enqueue(new TextEncoder().encode(sseData));
+                    }
+                  } catch (e) {
+                    console.warn('Failed to parse SSE chunk:', dataStr);
+                  }
+                }
+              }
             }
             controller.close();
           } catch (e) {
@@ -64,7 +114,6 @@ serve(async (req) => {
     
     else if (action === 'evaluate') {
       const { conversationLog, questionText, correctAnswer } = payload;
-      const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
       
       const prompt = `أنت مقيّم تعليمي. بناءً على المحادثة التالية بين الطالب والمساعد الذكي "عريف"، قيّم أداء الطالب.
 السؤال: ${questionText}
@@ -81,8 +130,20 @@ ${conversationLog.map((m: any) => `${m.sender === 'user' ? 'الطالب' : 'ع�
   "hints_needed": (عدد التلميحات التي احتاجها الطالب)
 }`;
 
-      const result = await model.generateContent(prompt);
-      const text = result.response.text().replace(/```json/g, '').replace(/```/g, '').trim();
+      const requestBody = {
+        model: "meta-llama/llama-3.3-70b-instruct:free",
+        messages: [{ role: 'user', content: prompt }]
+      };
+
+      const response = await fetch(openRouterEndpoint, {
+        method: 'POST',
+        headers: defaultHeaders,
+        body: JSON.stringify(requestBody)
+      });
+
+      if (!response.ok) throw new Error(await response.text());
+      const data = await response.json();
+      const text = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
       
       return new Response(text, {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -92,15 +153,7 @@ ${conversationLog.map((m: any) => `${m.sender === 'user' ? 'الطالب' : 'ع�
 
     else if (action === 'extract') {
       const { imageBase64, mimeType } = payload;
-      const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
       
-      const imagePart = {
-        inlineData: {
-          data: imageBase64,
-          mimeType: mimeType || "image/jpeg"
-        },
-      };
-
       const prompt = `أنت مساعد تعليمي خبير في المناهج السعودية. مهمتك هي قراءة صورة هذه الصفحة من كتاب مدرسي (تمارين أو أسئلة).
 قم باستخراج جميع الأسئلة والتمارين الموجودة في الصفحة بدقة عالية.
 أعد الناتج بصيغة JSON Array فقط، بدون أي نصوص إضافية، بحيث يحتوي كل عنصر على:
@@ -116,8 +169,28 @@ ${conversationLog.map((m: any) => `${m.sender === 'user' ? 'الطالب' : 'ع�
   }
 ]`;
 
-      const result = await model.generateContent([prompt, imagePart]);
-      const text = result.response.text().replace(/```json/g, '').replace(/```/g, '').trim();
+      const requestBody = {
+        model: "google/gemini-flash-1.5-exp:free", // Must be a vision-capable model
+        messages: [
+          {
+            role: "user",
+            content: [
+              { type: "text", text: prompt },
+              { type: "image_url", image_url: { url: `data:${mimeType || "image/jpeg"};base64,${imageBase64}` } }
+            ]
+          }
+        ]
+      };
+
+      const response = await fetch(openRouterEndpoint, {
+        method: 'POST',
+        headers: defaultHeaders,
+        body: JSON.stringify(requestBody)
+      });
+
+      if (!response.ok) throw new Error(await response.text());
+      const data = await response.json();
+      const text = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
       
       return new Response(text, {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -128,6 +201,7 @@ ${conversationLog.map((m: any) => `${m.sender === 'user' ? 'الطالب' : 'ع�
     throw new Error(`Unsupported action: ${action}`);
 
   } catch (error) {
+    console.error('Edge Function Error:', error);
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 400,
