@@ -41,7 +41,7 @@ serve(async (req) => {
       messages.push({ role: 'user', content: message });
 
       const requestBody = {
-        model: "google/gemma-4-31b-it:free",
+        model: "openai/gpt-4o-mini",
         messages: messages,
         stream: true,
         temperature: 0.7,
@@ -131,7 +131,7 @@ ${conversationLog.map((m: any) => `${m.sender === 'user' ? 'الطالب' : 'ع�
 }`;
 
       const requestBody = {
-        model: "google/gemma-4-31b-it:free",
+        model: "openai/gpt-4o-mini",
         messages: [{ role: 'user', content: prompt }]
       };
 
@@ -170,7 +170,7 @@ ${conversationLog.map((m: any) => `${m.sender === 'user' ? 'الطالب' : 'ع�
 ]`;
 
       const requestBody = {
-        model: "google/gemma-4-31b-it:free", // Must be a vision-capable model
+        model: "openai/gpt-4o-mini", // GPT-4o-mini natively supports vision!
         messages: [
           {
             role: "user",
