@@ -15,7 +15,7 @@ try {
 let chatSessions = {};
 
 export function isAIReady() {
-  return true; 
+  return false; // Force fallback mock AI since the key provided earlier was invalid
 }
 
 const AREEF_SYSTEM_PROMPT = `أنت "عريف" — مساعد تعليمي ذكي باللغة العربية مصمم خصيصاً للطلاب في المملكة العربية السعودية.
