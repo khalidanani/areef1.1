@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { isAIReady, getWelcomeMessage, sendMessage as sendAIMessage, evaluateConversation, clearChat } from '../lib/gemini';
+import { isAIReady, sendMessage as sendAIMessage, evaluateConversation, clearChat, startChat } from '../lib/gemini';
 import { Send, Bot, User, CheckCircle, ArrowRight, Loader } from 'lucide-react';
 import NotificationsBell from './NotificationsBell';
 
@@ -83,28 +83,15 @@ export default function StudentChat() {
       questionRef = ` (${parts.join(' - ')})`;
     }
 
-    if (isAIReady()) {
-      try {
-        // Get real AI welcome message
-        const welcomeText = await getWelcomeMessage(
-          q.id, q.question_text, q.correct_answer, q.question_type,
-          q.page_number, q.exercise_number
-        );
-        setMessages([{ sender: 'bot', text: welcomeText }]);
-      } catch (error) {
-        console.error('AI Error:', error);
-        // Fallback to basic message if AI fails
-        setMessages([
-          { sender: 'bot', text: `مرحباً بك! أنا عريف مساعدك الذكي 🤖. هيا لنحل معاً سؤال: ${q.question_text}${questionRef}` },
-          { sender: 'bot', text: 'ما هي إجابتك أو كيف تفكر في الحل؟' }
-        ]);
-      }
-    } else {
-      setMessages([
-        { sender: 'bot', text: `مرحباً بك! أنا عريف مساعدك الذكي 🤖. هيا لنحل معاً سؤال: ${q.question_text}${questionRef}` },
-        { sender: 'bot', text: 'ما هي إجابتك أو كيف تفكر في الحل؟' }
-      ]);
-    }
+    // Show question immediately (Instant)
+    const initialText = `مرحباً بك! أنا عريف مساعدك الذكي 🤖. هيا لنحل معاً سؤال:\n\n**${q.question_text}**${questionRef}\n\nما هي إجابتك أو كيف تفكر في الحل؟`;
+    
+    setMessages([
+      { sender: 'bot', text: initialText }
+    ]);
+    
+    // Initialize AI context silently in the background
+    startChat(q.id, q.question_text, q.correct_answer, q.question_type, q.page_number, q.exercise_number);
     setIsThinking(false);
   }
 

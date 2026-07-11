@@ -29,7 +29,11 @@ export function startChat(questionId, questionText, correctAnswer, questionType,
   chatSessions[questionId] = [
     {
       role: "user",
-      parts: [{ text: `[تعليمات النظام]\n${AREEF_SYSTEM_PROMPT}\n\n[بيانات السؤال]\n${questionContext}\n\n[ابدأ الآن بتحية الطالب وعرض السؤال عليه بأسلوبك التعليمي]` }]
+      parts: [{ text: `[تعليمات النظام]\n${AREEF_SYSTEM_PROMPT}\n\n[بيانات السؤال]\n${questionContext}\n\nلقد قمت أنا (النظام) بعرض السؤال على الطالب نيابة عنك، والطالب الآن سيكتب إجابته. قيم إجابته مباشرة ووجهه.` }]
+    },
+    {
+      role: "model",
+      parts: [{ text: `مرحباً بك! أنا عريف مساعدك الذكي 🤖. هيا لنحل معاً سؤال:\n\n**${questionText}**\n\nما هي إجابتك أو كيف تفكر في الحل؟` }]
     }
   ];
   
@@ -59,10 +63,7 @@ export async function sendMessage(questionId, message) {
   }
 }
 
-export async function getWelcomeMessage(questionId, questionText, correctAnswer, questionType, pageNumber, exerciseNumber) {
-  startChat(questionId, questionText, correctAnswer, questionType, pageNumber, exerciseNumber);
-  return sendMessage(questionId, 'مرحبا، أنا جاهز للحل');
-}
+
 
 export async function evaluateConversation(conversationLog, questionText, correctAnswer) {
   try {
