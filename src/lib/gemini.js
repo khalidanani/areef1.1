@@ -1,21 +1,9 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
-// We obfuscate the key to prevent GitHub's Secret Scanner from blocking the push.
-// The key is reversed here and we reverse it back at runtime.
-const REVERSED_KEY = 'w8nFbUF6Qd4nJDtH7qGNba2dCf7-8JMMG_1TtMtvqVc6LNR8bA.QA';
-const GEMINI_API_KEY = REVERSED_KEY.split('').reverse().join('');
-
-let genAI;
-try {
-  genAI = new GoogleGenerativeAI(GEMINI_API_KEY.startsWith('AIza') || GEMINI_API_KEY.startsWith('AQ.') ? GEMINI_API_KEY : 'AIzaSy' + GEMINI_API_KEY);
-} catch (e) {
-  genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-}
+import { supabase } from './supabase';
 
 let chatSessions = {};
 
 export function isAIReady() {
-  return true; // The AI is now ready with the new 2.5-flash model
+  return true; // The AI is now ready via Edge Functions!
 }
 
 const AREEF_SYSTEM_PROMPT = `أنت "عريف" — مساعد تعليمي ذكي باللغة العربية مصمم خصيصاً للطلاب في المملكة العربية السعودية.
@@ -37,35 +25,36 @@ export function startChat(questionId, questionText, correctAnswer, questionType,
   if (pageNumber) questionContext += ')';
   questionContext += `\n\nالإجابة الصحيحة (سرية - لا تخبر الطالب بها مباشرة): ${correctAnswer}`;
   
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  // We keep track of history locally
+  chatSessions[questionId] = [
+    {
+      role: "user",
+      parts: [{ text: `[تعليمات النظام]\n${AREEF_SYSTEM_PROMPT}\n\n[بيانات السؤال]\n${questionContext}\n\n[ابدأ الآن بتحية الطالب وعرض السؤال عليه بأسلوبك التعليمي]` }]
+    }
+  ];
   
-  const chat = model.startChat({
-    history: [
-      {
-        role: "user",
-        parts: [{ text: `[تعليمات النظام]\n${AREEF_SYSTEM_PROMPT}\n\n[بيانات السؤال]\n${questionContext}\n\n[ابدأ الآن بتحية الطالب وعرض السؤال عليه بأسلوبك التعليمي]` }]
-      }
-    ],
-    generationConfig: {
-      temperature: 0.7,
-      maxOutputTokens: 500,
-    },
-  });
-
-  chatSessions[questionId] = chat;
-  return chat;
+  return chatSessions[questionId];
 }
 
 export async function sendMessage(questionId, message) {
-  const chat = chatSessions[questionId];
-  if (!chat) throw new Error('لم يتم بدء المحادثة بعد');
+  const history = chatSessions[questionId];
+  if (!history) throw new Error('لم يتم بدء المحادثة بعد');
 
   try {
-    const result = await chat.sendMessage(message);
-    const response = await result.response;
-    return response.text();
+    const { data, error } = await supabase.functions.invoke('gemini', {
+      body: { action: 'chat', payload: { history, message } }
+    });
+
+    if (error) throw error;
+    if (data && data.error) throw new Error(data.error);
+
+    // Update history
+    history.push({ role: 'user', parts: [{ text: message }] });
+    history.push({ role: 'model', parts: [{ text: data.text }] });
+
+    return data.text;
   } catch (error) {
-    console.error('Gemini API Error:', error);
+    console.error('Edge Function Error:', error);
     throw error;
   }
 }
@@ -77,28 +66,40 @@ export async function getWelcomeMessage(questionId, questionText, correctAnswer,
 
 export async function evaluateConversation(conversationLog, questionText, correctAnswer) {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-    const prompt = `أنت مقيّم تعليمي. بناءً على المحادثة التالية بين الطالب والمساعد الذكي "عريف"، قيّم أداء الطالب.
-السؤال: ${questionText}
-الإجابة الصحيحة: ${correctAnswer}
+    const { data, error } = await supabase.functions.invoke('gemini', {
+      body: { 
+        action: 'evaluate', 
+        payload: { conversationLog, questionText, correctAnswer } 
+      }
+    });
 
-المحادثة:
-${conversationLog.map((m) => `${m.sender === 'user' ? 'الطالب' : 'عريف'}: ${m.text}`).join('\n')}
+    if (error) throw error;
+    if (data && data.error) throw new Error(data.error);
 
-أعطني التقييم بصيغة JSON فقط:
-{
-  "grade": (رقم من 0 إلى 10),
-  "feedback": "(ملاحظة مختصرة باللغة العربية عن أداء الطالب في جملة واحدة)",
-  "understanding_level": "(ممتاز أو جيد أو متوسط أو ضعيف)",
-  "hints_needed": (عدد التلميحات التي احتاجها الطالب)
-}`;
-
-    const result = await model.generateContent(prompt);
-    const text = result.response.text().replace(/```json/g, '').replace(/```/g, '').trim();
-    return JSON.parse(text);
+    // Ensure data is parsed correctly if it came back as a JSON string
+    return typeof data === 'string' ? JSON.parse(data) : data;
   } catch (error) {
-    console.error('Evaluate API Error:', error);
+    console.error('Evaluate Edge Function Error:', error);
     return { grade: 5, feedback: 'تم التقييم تلقائياً نظراً لخطأ في الاتصال', understanding_level: 'متوسط', hints_needed: 0 };
+  }
+}
+
+export async function extractQuestionsFromImage(imageBase64, mimeType) {
+  try {
+    const { data, error } = await supabase.functions.invoke('gemini', {
+      body: { 
+        action: 'extract', 
+        payload: { imageBase64, mimeType } 
+      }
+    });
+
+    if (error) throw error;
+    if (data && data.error) throw new Error(data.error);
+
+    return typeof data === 'string' ? JSON.parse(data) : data;
+  } catch (error) {
+    console.error('Extract Edge Function Error:', error);
+    throw error;
   }
 }
 
