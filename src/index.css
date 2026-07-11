@@ -201,26 +201,28 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 
 /* Telegram Mobile UI Overrides */
 @media (max-width: 1199.98px) {
-  /* Hide sidebar entirely on mobile */
-  .layout-menu {
+  /* Hide redundant hamburger menu because we have Bottom Nav */
+  .layout-menu-toggle {
     display: none !important;
   }
-  
-  /* Make content edge-to-edge */
-  .container-xxl, .container-fluid, .container-p-y {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-    padding-bottom: 80px !important; /* Space for bottom nav */
+
+  /* Make content edge-to-edge but with proper padding so it doesn't touch the screen borders */
+  .container-xxl, .container-fluid {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  .container-p-y {
+    padding-bottom: 90px !important; /* Space for bottom nav */
   }
   
-  /* Flat cards on mobile like Telegram */
+  /* Mobile Cards - slight radius and subtle shadow like modern apps */
   .card {
-    border-radius: 0 !important;
+    border-radius: 16px !important;
     border-left: none !important;
     border-right: none !important;
-    box-shadow: none !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04) !important;
     border-bottom: 1px solid var(--border-color) !important;
-    margin-bottom: 0.5rem !important;
+    margin-bottom: 1rem !important;
   }
   
   /* Telegram Bottom Nav Glassmorphism */
@@ -341,6 +343,10 @@ h1, h2, h3, h4, h5, h6, .font-heading {
     border-radius: 20px 20px 0 0 !important;
     border: none !important;
     padding-bottom: env(safe-area-inset-bottom);
+  }
+  .modal-body {
+    max-height: 75vh;
+    overflow-y: auto;
   }
 }
 

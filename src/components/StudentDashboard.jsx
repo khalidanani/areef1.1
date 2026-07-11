@@ -79,14 +79,14 @@ export default function StudentDashboard() {
 
   return (
     <div className="container-fluid flex-grow-1 container-p-y">
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4 gap-3">
         <div>
-          <h4 className="fw-bold py-1 mb-1">
+          <h4 className="fw-bold py-1 mb-1" style={{ fontSize: '1.25rem' }}>
             <span className="text-muted fw-light">الرئيسية /</span> لوحة الطالب
           </h4>
-          <p className="text-muted mb-0">بوابة الطالب: فصولي وواجباتي</p>
+          <p className="text-muted mb-0" style={{ fontSize: '0.85rem' }}>بوابة الطالب: فصولي وواجباتي</p>
         </div>
-        <div className="d-flex align-items-center gap-3">
+        <div className="d-flex align-items-center gap-2 w-100 justify-content-end justify-content-sm-auto">
           <NotificationsBell />
         </div>
       </div>

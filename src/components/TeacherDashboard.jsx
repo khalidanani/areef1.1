@@ -126,19 +126,19 @@ export default function TeacherDashboard() {
 
   return (
     <div className="container-fluid flex-grow-1 container-p-y">
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-4 gap-3">
         <div>
-          <h4 className="fw-bold py-1 mb-1">
-            <span className="text-muted fw-light">الرئيسية /</span> الفصول الدراسية
+          <h4 className="fw-bold py-1 mb-1" style={{ fontSize: '1.25rem' }}>
+            <span className="text-muted fw-light">الرئيسية /</span> الفصول
           </h4>
-          <p className="text-muted mb-0">إليك نظرة عامة على فصولك اليوم</p>
+          <p className="text-muted mb-0" style={{ fontSize: '0.85rem' }}>إليك نظرة عامة على فصولك اليوم</p>
         </div>
-        <div className="d-flex align-items-center gap-3">
+        <div className="d-flex flex-wrap align-items-center gap-2">
           <NotificationsBell />
-          <Link to="/curriculum" className="btn btn-primary d-none d-sm-inline-block">
-            <i className="ti tabler-plus me-1"></i> إنشاء واجب جديد
+          <Link to="/curriculum" className="btn btn-primary btn-sm flex-grow-1 flex-sm-grow-0">
+            <i className="ti tabler-plus me-1"></i> إنشاء واجب
           </Link>
-          <button onClick={() => setShowInvoices(true)} className="btn btn-label-secondary">
+          <button onClick={() => setShowInvoices(true)} className="btn btn-label-secondary btn-sm flex-grow-1 flex-sm-grow-0">
             <i className="ti tabler-file-invoice me-1"></i> الفواتير
           </button>
         </div>

@@ -216,14 +216,14 @@ export default function StudentChat() {
 
   return (
     <div className="container animate-fade-in" style={{ maxWidth: '900px' }}>
-      <header className="flex justify-between items-center" style={{ marginBottom: '2rem' }}>
+      <header className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4 gap-3">
         <div>
-          <h2 style={{ color: 'var(--primary-blue)', fontSize: '1.8rem', fontWeight: 'bold' }}>بوابة الطالب</h2>
-          <p style={{ color: 'var(--text-secondary)' }}>الفصل: {className} | الطالب: {user?.user_metadata?.full_name || user?.email?.split('@')[0]}</p>
+          <h2 style={{ color: 'var(--primary-blue)', fontSize: '1.5rem', fontWeight: 'bold', margin: 0 }}>بوابة الطالب</h2>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', margin: 0 }}>الفصل: {className} | الطالب: {user?.user_metadata?.full_name || user?.email?.split('@')[0]}</p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="d-flex align-items-center gap-2 w-100 justify-content-between justify-content-sm-end">
           <NotificationsBell />
-          <button onClick={handleLogout} className="btn btn-outline">العودة للفصول</button>
+          <button onClick={handleLogout} className="btn btn-outline btn-sm">العودة للفصول</button>
         </div>
       </header>
 
@@ -235,29 +235,29 @@ export default function StudentChat() {
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {homeworks.map(hw => (
-                <div key={hw.id} onClick={() => loadHomeworkQuestions(hw)} style={{ padding: '1.5rem', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'all 0.2s ease' }} className="hover:bg-gray-50">
-                  <div>
-                    <h4 style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--primary-blue)', marginBottom: '0.5rem' }}>{hw.title}</h4>
-                    <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>تاريخ النشر: {new Date(hw.created_at).toLocaleDateString('ar-SA')}</span>
+                <div key={hw.id} onClick={() => loadHomeworkQuestions(hw)} style={{ padding: '1.5rem', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'all 0.2s ease' }} className="hover:bg-gray-50 flex-column flex-sm-row gap-3">
+                  <div className="text-center text-sm-start w-100">
+                    <h4 style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--primary-blue)', marginBottom: '0.2rem' }}>{hw.title}</h4>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>تاريخ النشر: {new Date(hw.created_at).toLocaleDateString('ar-SA')}</span>
                   </div>
-                  <button className="btn btn-primary" style={{ borderRadius: '20px', padding: '0.5rem 1.5rem' }}>بدء الحل</button>
+                  <button className="btn btn-primary btn-sm w-100 w-sm-auto" style={{ borderRadius: '20px' }}>بدء الحل</button>
                 </div>
               ))}
             </div>
           )}
         </div>
       ) : (
-        <div className="card" style={{ display: 'flex', flexDirection: 'column', height: '600px', padding: 0, overflow: 'hidden' }}>
+        <div className="card" style={{ display: 'flex', flexDirection: 'column', height: 'min(600px, calc(100vh - 180px))', padding: 0, overflow: 'hidden' }}>
           {/* Chat Header */}
-          <div style={{ padding: '1rem', backgroundColor: 'var(--primary-blue)', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ padding: '0.75rem 1rem', backgroundColor: 'var(--primary-blue)', color: 'white', display: 'flex', flexWrap: 'wrap', gap: '0.5rem', justifyContent: 'space-between', alignItems: 'center' }}>
             <div className="flex gap-2 items-center">
-              <button onClick={() => setActiveHomework(null)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}><ArrowRight size={24} /></button>
-              <h3 style={{ margin: 0, fontWeight: 'bold' }}>{activeHomework.title}</h3>
+              <button onClick={() => setActiveHomework(null)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', padding: 0 }}><ArrowRight size={20} /></button>
+              <h3 style={{ margin: 0, fontWeight: 'bold', fontSize: '1.1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '150px' }}>{activeHomework.title}</h3>
             </div>
             <div className="flex gap-2 items-center">
-              {isAIReady() && <span style={{ fontSize: '0.7rem', backgroundColor: 'rgba(16,185,129,0.3)', padding: '0.2rem 0.5rem', borderRadius: '8px' }}>🟢 AI حقيقي</span>}
-              <span style={{ fontSize: '0.9rem', backgroundColor: 'rgba(255,255,255,0.2)', padding: '0.2rem 0.6rem', borderRadius: '12px' }}>
-                سؤال {currentQuestionIndex + 1} من {questions.length}
+              {isAIReady() && <span style={{ fontSize: '0.65rem', backgroundColor: 'rgba(16,185,129,0.3)', padding: '0.2rem 0.5rem', borderRadius: '8px', whiteSpace: 'nowrap' }}>🟢 AI</span>}
+              <span style={{ fontSize: '0.8rem', backgroundColor: 'rgba(255,255,255,0.2)', padding: '0.2rem 0.6rem', borderRadius: '12px', whiteSpace: 'nowrap' }}>
+                سؤال {currentQuestionIndex + 1} / {questions.length}
               </span>
             </div>
           </div>
