@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
 import Login from './components/Login'
 import RoleSelection from './components/RoleSelection'
 import PWAInstallPrompt from './components/PWAInstallPrompt'
@@ -18,8 +18,9 @@ const AdminSettings = lazy(() => import('./components/AdminSettings'));
 const UserProfile = lazy(() => import('./components/UserProfile'));
 const Support = lazy(() => import('./components/Support'));
 
-function ProtectedRoute({ children }) {
-  const { user } = useAuth();
+function ProtectedRoute({ children, allowedRoles }) {
+  const { user, userRole } = useAuth();
+  
   if (!user) {
     return (
       <div className="container-xxl container-p-y text-center mt-5">
@@ -28,6 +29,14 @@ function ProtectedRoute({ children }) {
       </div>
     );
   }
+
+  // If user has a role, check if they are authorized for this route
+  if (allowedRoles && userRole && !allowedRoles.includes(userRole)) {
+    if (userRole === 'teacher') return <Navigate to="/teacher-dashboard" replace />;
+    if (userRole === 'student') return <Navigate to="/student-dashboard" replace />;
+    if (userRole === 'new') return <Navigate to="/role-selection" replace />;
+  }
+
   return children;
 }
 
@@ -60,15 +69,17 @@ function AppRoutes() {
     <LayoutWrapper>
       <Suspense fallback={<LoadingScreen />}>
         <Routes>
-          <Route path="/teacher-dashboard" element={<ProtectedRoute><TeacherDashboard /></ProtectedRoute>} />
-          <Route path="/teacher" element={<ProtectedRoute><TeacherDashboard /></ProtectedRoute>} />
-          <Route path="/curriculum" element={<ProtectedRoute><CurriculumBank /></ProtectedRoute>} />
-          <Route path="/student-dashboard" element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>} />
-          <Route path="/student-chat/:classId" element={<ProtectedRoute><StudentChat /></ProtectedRoute>} />
-          <Route path="/store" element={<ProtectedRoute><Store /></ProtectedRoute>} />
-          <Route path="/admin" element={<ProtectedRoute><AdminSettings /></ProtectedRoute>} />
-          <Route path="/profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
-          <Route path="/support" element={<ProtectedRoute><Support /></ProtectedRoute>} />
+          <Route path="/teacher-dashboard" element={<ProtectedRoute allowedRoles={['teacher']}><TeacherDashboard /></ProtectedRoute>} />
+          <Route path="/teacher" element={<ProtectedRoute allowedRoles={['teacher']}><TeacherDashboard /></ProtectedRoute>} />
+          <Route path="/curriculum" element={<ProtectedRoute allowedRoles={['teacher']}><CurriculumBank /></ProtectedRoute>} />
+          
+          <Route path="/student-dashboard" element={<ProtectedRoute allowedRoles={['student']}><StudentDashboard /></ProtectedRoute>} />
+          <Route path="/student-chat/:classId" element={<ProtectedRoute allowedRoles={['student']}><StudentChat /></ProtectedRoute>} />
+          
+          <Route path="/store" element={<ProtectedRoute allowedRoles={['teacher', 'student']}><Store /></ProtectedRoute>} />
+          <Route path="/admin" element={<ProtectedRoute allowedRoles={['teacher', 'student']}><AdminSettings /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute allowedRoles={['teacher', 'student']}><UserProfile /></ProtectedRoute>} />
+          <Route path="/support" element={<ProtectedRoute allowedRoles={['teacher', 'student']}><Support /></ProtectedRoute>} />
         </Routes>
       </Suspense>
       <PWAInstallPrompt />

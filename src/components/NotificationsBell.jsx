@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { Bell } from 'lucide-react';
 
 export default function NotificationsBell() {
   const { user } = useAuth();
@@ -86,7 +87,7 @@ export default function NotificationsBell() {
         style={{ color: 'var(--text-primary)' }}
         title="الإشعارات"
       >
-        <span style={{ fontSize: '1.25rem' }}>🔔</span>
+        <Bell size={24} strokeWidth={1.5} />
         {unreadCount > 0 && (
           <span className="absolute top-0 right-0 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full border-2 border-white dark:border-gray-900" style={{ transform: 'translate(25%, -25%)' }}>
             {unreadCount > 9 ? '9+' : unreadCount}
