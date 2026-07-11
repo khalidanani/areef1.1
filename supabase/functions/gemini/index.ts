@@ -41,7 +41,7 @@ serve(async (req) => {
       messages.push({ role: 'user', content: message });
 
       const requestBody = {
-        model: "meta-llama/llama-3.3-70b-instruct:free",
+        model: "google/gemini-2.0-flash-lite-preview-02-05:free",
         messages: messages,
         stream: true,
         temperature: 0.7,
@@ -131,7 +131,7 @@ ${conversationLog.map((m: any) => `${m.sender === 'user' ? 'الطالب' : 'ع�
 }`;
 
       const requestBody = {
-        model: "meta-llama/llama-3.3-70b-instruct:free",
+        model: "google/gemini-2.0-flash-lite-preview-02-05:free",
         messages: [{ role: 'user', content: prompt }]
       };
 
