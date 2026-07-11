@@ -1,5 +1,6 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
+import LandingRoleSelect from './components/LandingRoleSelect'
 import Login from './components/Login'
 import RoleSelection from './components/RoleSelection'
 import PWAInstallPrompt from './components/PWAInstallPrompt'
@@ -50,6 +51,9 @@ function AppRoutes() {
   const isAuthPage = location.pathname === '/' || location.pathname === '/login' || location.pathname === '/role-selection';
   
   if (isAuthPage) {
+    if (location.pathname === '/') {
+      return <LandingRoleSelect />;
+    }
     return (
       <div className="layout-wrapper layout-content-navbar layout-without-menu">
         <div className="layout-container">
@@ -57,7 +61,6 @@ function AppRoutes() {
             <div className="content-wrapper">
               <div className="container-xxl flex-grow-1 container-p-y d-flex justify-content-center align-items-center">
                 <Routes>
-                  <Route path="/" element={<Login />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/role-selection" element={<ProtectedRoute><RoleSelection /></ProtectedRoute>} />
                 </Routes>
