@@ -151,17 +151,26 @@ export function clearChat(questionId) {
   delete chatSessions[questionId];
 }
 
-export async function sendGeneralMessage(history, message, onChunk) {
+export async function sendGeneralMessage(history, message, onChunk, homeworksContext = '') {
   try {
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://lpyczfbiaoyaxuhnuacn.supabase.co';
     const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxweWN6ZmJpYW95YXh1aG51YWNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNDA5MzQsImV4cCI6MjA5ODkxNjkzNH0.lme8PB2SFvc7AI9NRuXolrsvEAQ-gxukjhQW74JSOSE';
     
-    // Map custom history format if needed, but OpenRouter edge function expects { role, text/parts }
-    // which we will construct from the passed history
-    const mappedHistory = history.map(h => ({
+    let mappedHistory = history.map(h => ({
       role: h.sender === 'bot' ? 'model' : 'user',
       text: h.text
     }));
+
+    // Inject system prompt if this is the first message or we want to ensure context
+    const systemPrompt = `أنت "عريف" المساعد التعليمي الذكي. تتحدث مع الطالب الآن في المحادثة العامة. 
+إذا سأل الطالب "هل لدي واجبات؟" أو "ما هي واجباتي"، أجب بناءً على هذه القائمة فقط:
+${homeworksContext ? homeworksContext : 'لا يوجد واجبات حالياً.'}
+اطلب منه الضغط على الواجب من منتصف الشاشة للبدء في حله.`;
+
+    if (mappedHistory.length > 0 && mappedHistory[0].role !== 'model') {
+      mappedHistory.unshift({ role: 'user', text: `[تعليمات النظام السري]:\n${systemPrompt}\n[انتهت التعليمات، أجب الآن على رسالتي كـ عريف]` });
+      mappedHistory.splice(1, 0, { role: 'model', text: 'مفهوم! أنا عريف وسأرد بناءً على هذه التعليمات.' });
+    }
 
     const response = await fetch(`${supabaseUrl}/functions/v1/gemini`, {
       method: 'POST',

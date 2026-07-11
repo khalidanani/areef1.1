@@ -98,13 +98,17 @@ export default function StudentDashboard() {
 
     if (isAIReady()) {
       try {
+        const homeworksContextStr = homeworks.length > 0 
+          ? homeworks.map(h => `- ${h.title}`).join('\n') 
+          : 'لا يوجد واجبات حالياً.';
+
         await sendGeneralMessage(updatedMessages, userMessage, (chunk) => {
           setMessages(prev => {
             const newMsgs = [...prev];
             newMsgs[newMsgs.length - 1].text = chunk;
             return newMsgs;
           });
-        });
+        }, homeworksContextStr);
         
         // Save final to DB
         setMessages(prev => {
