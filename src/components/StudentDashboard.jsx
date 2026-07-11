@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Send, Bot, User, Loader, Plus, Menu } from 'lucide-react';
 import areefMascot from '../assets/areef_mascot.png';
-import { isAIReady, sendMessage as sendAIMessage } from '../lib/gemini';
+import { isAIReady, sendGeneralMessage } from '../lib/gemini';
 
 export default function StudentDashboard() {
   const { user } = useAuth();
@@ -65,25 +65,24 @@ export default function StudentDashboard() {
     setInputValue('');
     
     // Add user message to UI
-    setMessages(prev => [...prev, { sender: 'user', text: userMessage }]);
+    const updatedMessages = [...messages, { sender: 'user', text: userMessage }];
+    setMessages([...updatedMessages, { sender: 'bot', text: '' }]); // Placeholder
     setIsThinking(true);
-    setMessages(prev => [...prev, { sender: 'bot', text: '' }]); // Placeholder
 
     let chatId = currentChatId;
     if (!chatId) {
       chatId = await createNewChat(userMessage);
       setCurrentChatId(chatId);
+      // Navigate to the chat URL so it persists
+      navigate(`/student-dashboard?chat=${chatId}`);
+    } else {
+      // Save user message immediately
+      supabase.from('student_chats').update({ messages: updatedMessages }).eq('id', chatId).then();
     }
 
     if (isAIReady()) {
       try {
-        // Send to Gemini (using "general" as questionId for history tracking)
-        // Wait, for general chat we should use the chatId as the session ID
-        const sessionKey = chatId || 'temp_general';
-        // Initialize chat history if empty
-        // We will just pass the messages array to a new gemini function, or use the existing one
-        // For simplicity in this mockup, we'll just send the message
-        await sendAIMessage(sessionKey, userMessage, (chunk) => {
+        await sendGeneralMessage(updatedMessages, userMessage, (chunk) => {
           setMessages(prev => {
             const newMsgs = [...prev];
             newMsgs[newMsgs.length - 1].text = chunk;
@@ -91,7 +90,7 @@ export default function StudentDashboard() {
           });
         });
         
-        // Save to DB
+        // Save final to DB
         setMessages(prev => {
           supabase.from('student_chats').update({ messages: prev }).eq('id', chatId).then();
           return prev;

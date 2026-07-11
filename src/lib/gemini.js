@@ -150,3 +150,66 @@ export async function extractQuestionsFromImage(imageBase64, mimeType) {
 export function clearChat(questionId) {
   delete chatSessions[questionId];
 }
+
+export async function sendGeneralMessage(history, message, onChunk) {
+  try {
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://lpyczfbiaoyaxuhnuacn.supabase.co';
+    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxweWN6ZmJpYW95YXh1aG51YWNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNDA5MzQsImV4cCI6MjA5ODkxNjkzNH0.lme8PB2SFvc7AI9NRuXolrsvEAQ-gxukjhQW74JSOSE';
+    
+    // Map custom history format if needed, but OpenRouter edge function expects { role, text/parts }
+    // which we will construct from the passed history
+    const mappedHistory = history.map(h => ({
+      role: h.sender === 'bot' ? 'model' : 'user',
+      text: h.text
+    }));
+
+    const response = await fetch(`${supabaseUrl}/functions/v1/gemini`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${supabaseAnonKey}`,
+        'apikey': supabaseAnonKey
+      },
+      body: JSON.stringify({ action: 'chat', payload: { history: mappedHistory, message } })
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error('Edge Function Error Body:', errText);
+      throw new Error(`HTTP error! status: ${response.status}, body: ${errText}`);
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder('utf-8');
+    let fullText = '';
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n\n');
+      buffer = lines.pop(); 
+      
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          const dataStr = line.slice(6);
+          try {
+            const parsed = JSON.parse(dataStr);
+            if (parsed.text) {
+              fullText += parsed.text;
+              if (onChunk) onChunk(fullText);
+            }
+          } catch (e) {
+            console.warn('Failed to parse SSE chunk:', dataStr);
+          }
+        }
+      }
+    }
+    return fullText;
+  } catch (error) {
+    console.error('Edge Function Error:', error);
+    throw error;
+  }
+}
