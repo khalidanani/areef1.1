@@ -40,23 +40,42 @@ export function startChat(questionId, questionText, correctAnswer, questionType,
   return chatSessions[questionId];
 }
 
-export async function sendMessage(questionId, message) {
+export async function sendMessage(questionId, message, onChunk) {
   const history = chatSessions[questionId];
   if (!history) throw new Error('لم يتم بدء المحادثة بعد');
 
   try {
-    const { data, error } = await supabase.functions.invoke('gemini', {
-      body: { action: 'chat', payload: { history, message } }
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://lpyczfbiaoyaxuhnuacn.supabase.co';
+    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxweWN6ZmJpYW95YXh1aG51YWNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNDA5MzQsImV4cCI6MjA5ODkxNjkzNH0.lme8PB2SFvc7AI9NRuXolrsvEAQ-gxukjhQW74JSOSE';
+    
+    const response = await fetch(`${supabaseUrl}/functions/v1/gemini`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${supabaseAnonKey}`
+      },
+      body: JSON.stringify({ action: 'chat', payload: { history, message } })
     });
 
-    if (error) throw error;
-    if (data && data.error) throw new Error(data.error);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder('utf-8');
+    let fullText = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value, { stream: true });
+      fullText += chunk;
+      if (onChunk) onChunk(fullText);
+    }
 
     // Update history
     history.push({ role: 'user', parts: [{ text: message }] });
-    history.push({ role: 'model', parts: [{ text: data.text }] });
+    history.push({ role: 'model', parts: [{ text: fullText }] });
 
-    return data.text;
+    return fullText;
   } catch (error) {
     console.error('Edge Function Error:', error);
     throw error;

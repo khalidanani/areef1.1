@@ -99,21 +99,27 @@ export default function StudentChat() {
     e.preventDefault();
     if (!inputValue.trim() || isThinking || chatFinished) return;
 
-    const userMsg = inputValue;
-    setMessages(prev => [...prev, { sender: 'user', text: userMsg }]);
+    const currentQ = questions[currentQuestionIndex];
+    const userMessage = inputValue;
+    setMessages(prev => [...prev, { sender: 'user', text: userMessage }]);
     setInputValue('');
     setIsThinking(true);
-
-    const currentQ = questions[currentQuestionIndex];
+    
+    // Add placeholder for streaming response
+    setMessages(prev => [...prev, { sender: 'bot', text: '' }]);
 
     if (isAIReady()) {
       try {
-        // Send to real Gemini AI
-        const aiResponse = await sendAIMessage(currentQ.id, userMsg);
-        setMessages(prev => [...prev, { sender: 'bot', text: aiResponse }]);
+        await sendAIMessage(currentQ.id, userMessage, (chunk) => {
+          setMessages(prev => {
+            const newMessages = [...prev];
+            newMessages[newMessages.length - 1].text = chunk;
+            return newMessages;
+          });
+        });
       } catch (error) {
         console.error('AI Response Error:', error);
-        setMessages(prev => [...prev, { sender: 'bot', text: 'عذراً، حدث خطأ في الاتصال. حاول مرة أخرى 🔄' }]);
+        setMessages(prev => prev.slice(0, -1).concat({ sender: 'bot', text: 'عذراً، حدث خطأ في الاتصال. حاول مرة أخرى 🔄' }));
       }
     } else {
       // Fallback mock logic (if no API key)

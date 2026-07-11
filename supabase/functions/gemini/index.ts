@@ -34,11 +34,24 @@ serve(async (req) => {
         },
       });
 
-      const result = await chat.sendMessage(message);
-      const response = await result.response;
+      const result = await chat.sendMessageStream(message);
       
-      return new Response(JSON.stringify({ text: response.text() }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      const stream = new ReadableStream({
+        async start(controller) {
+          try {
+            for await (const chunk of result.stream) {
+              const chunkText = chunk.text();
+              controller.enqueue(new TextEncoder().encode(chunkText));
+            }
+            controller.close();
+          } catch (e) {
+            controller.error(e);
+          }
+        }
+      });
+
+      return new Response(stream, {
+        headers: { ...corsHeaders, 'Content-Type': 'text/plain' },
         status: 200,
       })
     } 
