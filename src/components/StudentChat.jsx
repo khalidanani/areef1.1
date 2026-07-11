@@ -265,31 +265,46 @@ export default function StudentChat() {
           {/* Chat Messages */}
           <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', backgroundColor: '#f8fafc' }}>
             {messages.map((msg, i) => (
-              <div key={i} style={{ display: 'flex', justifyContent: msg.sender === 'user' ? 'flex-end' : 'flex-start' }}>
+              <div key={i} className={`d-flex ${msg.sender === 'user' ? 'justify-content-end' : 'justify-content-start'} animate-fade-in`} style={{ animationDelay: '0.1s' }}>
                 <div style={{ 
-                  maxWidth: '75%', 
-                  padding: '1rem', 
-                  borderRadius: '12px',
-                  backgroundColor: msg.sender === 'user' ? 'var(--primary-blue)' : 'white',
+                  maxWidth: '85%', 
+                  padding: '0.85rem 1.2rem', 
+                  borderRadius: msg.sender === 'user' ? '20px 20px 0 20px' : '20px 20px 20px 0',
+                  backgroundColor: msg.sender === 'user' ? 'var(--primary-blue)' : '#ffffff',
                   color: msg.sender === 'user' ? 'white' : 'var(--text-primary)',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-                  border: msg.sender === 'user' ? 'none' : '1px solid var(--border-color)'
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                  border: msg.sender === 'user' ? 'none' : '1px solid var(--border-color)',
+                  position: 'relative'
                 }}>
-                  <div className="flex gap-2 items-center" style={{ marginBottom: '0.5rem', opacity: 0.8, fontSize: '0.8rem' }}>
-                    {msg.sender === 'bot' ? <Bot size={16} /> : <User size={16} />}
+                  <div className="d-flex align-items-center gap-1 mb-1" style={{ opacity: 0.7, fontSize: '0.75rem', fontWeight: 600 }}>
+                    {msg.sender === 'bot' ? <Bot size={14} /> : <User size={14} />}
                     <span>{msg.sender === 'bot' ? 'عريف' : 'أنت'}</span>
                   </div>
-                  <p style={{ lineHeight: '1.8', whiteSpace: 'pre-wrap' }}>{msg.text}</p>
+                  <p className="mb-0" style={{ lineHeight: '1.6', whiteSpace: 'pre-wrap', fontSize: '0.95rem' }}>{msg.text}</p>
+                  
+                  {/* Read receipt / timestamp placeholder for Telegram feel */}
+                  <div className="text-end mt-1" style={{ fontSize: '0.65rem', opacity: 0.6 }}>
+                    الآن {msg.sender === 'user' && <CheckCircle size={10} className="ms-1" />}
+                  </div>
                 </div>
               </div>
             ))}
 
             {/* Thinking indicator */}
             {isThinking && (
-              <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                <div style={{ padding: '1rem', borderRadius: '12px', backgroundColor: 'white', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <Loader size={16} style={{ animation: 'spin 1s linear infinite' }} />
-                  <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>عريف يفكر...</span>
+              <div className="d-flex justify-content-start animate-fade-in">
+                <div style={{ 
+                  padding: '0.8rem 1.2rem', 
+                  borderRadius: '20px 20px 20px 0', 
+                  backgroundColor: 'white', 
+                  border: '1px solid var(--border-color)', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '0.5rem',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
+                }}>
+                  <Loader size={16} style={{ animation: 'spin 1.5s linear infinite', color: 'var(--primary-blue)' }} />
+                  <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: 600 }}>عريف يكتب...</span>
                 </div>
               </div>
             )}
@@ -310,22 +325,40 @@ export default function StudentChat() {
           </div>
 
           {/* Chat Input */}
-          <form onSubmit={handleSendMessage} style={{ padding: '1rem', backgroundColor: 'white', borderTop: '1px solid var(--border-color)', display: 'flex', gap: '0.5rem' }}>
-            <input 
-              type="text" 
+          <form onSubmit={handleSendMessage} style={{ padding: '0.75rem 1rem', backgroundColor: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(10px)', borderTop: '1px solid rgba(0,0,0,0.08)', display: 'flex', gap: '0.5rem', alignItems: 'flex-end' }}>
+            <textarea 
               value={inputValue}
               onChange={e => setInputValue(e.target.value)}
-              placeholder="اكتب إجابتك هنا ليساعدك عريف..."
-              style={{ flex: 1, padding: '1rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-color)', outline: 'none' }}
+              onKeyDown={e => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSendMessage(e);
+                }
+              }}
+              placeholder="اكتب رسالة..."
+              style={{ 
+                flex: 1, 
+                padding: '0.8rem 1rem', 
+                borderRadius: '24px', 
+                border: '1px solid var(--border-color)', 
+                outline: 'none',
+                resize: 'none',
+                minHeight: '45px',
+                maxHeight: '120px',
+                backgroundColor: '#f1f5f9',
+                fontFamily: 'inherit',
+                fontSize: '0.95rem'
+              }}
               disabled={chatFinished || isThinking}
+              rows={1}
             />
             <button 
               type="submit" 
-              className="btn btn-primary" 
-              style={{ padding: '0 1.5rem', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              disabled={chatFinished || isThinking}
+              className="btn btn-primary rounded-circle d-flex justify-content-center align-items-center" 
+              style={{ width: '45px', height: '45px', flexShrink: 0, transition: 'transform 0.2s' }}
+              disabled={chatFinished || isThinking || !inputValue.trim()}
             >
-              <Send size={20} />
+              <Send size={20} style={{ marginLeft: '-2px' }} />
             </button>
           </form>
         </div>

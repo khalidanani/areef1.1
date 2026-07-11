@@ -4,9 +4,11 @@ import { useAuth } from '../contexts/AuthContext';
 import { Link } from 'react-router-dom';
 import { PAYMENT_CONFIG } from '../lib/payments';
 import NotificationsBell from './NotificationsBell';
+import { useToast } from '../contexts/ToastContext';
 
 export default function TeacherDashboard() {
   const { user, signOut } = useAuth();
+  const { toast } = useToast();
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateClass, setShowCreateClass] = useState(false);
@@ -84,6 +86,9 @@ export default function TeacherDashboard() {
       setShowCreateClass(false);
       setNewClassName('');
       setNewGradeLevel('');
+      toast.success('تم إنشاء الفصل بنجاح!');
+    } else {
+      toast.error('حدث خطأ أثناء إنشاء الفصل');
     }
   }
 
@@ -153,7 +158,7 @@ export default function TeacherDashboard() {
       </div>
 
       {showCreateClass && (
-        <div className="card mb-4 border border-primary">
+        <div className="card mb-4 border border-primary animate-fade-in">
           <div className="card-header">
             <h5 className="mb-0 text-primary">إنشاء فصل جديد</h5>
           </div>
@@ -191,15 +196,23 @@ export default function TeacherDashboard() {
       )}
 
       {loading ? (
-        <div className="d-flex justify-content-center my-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">جاري التحميل...</span>
-          </div>
+        <div className="row g-4">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="col-xl-4 col-lg-6 col-md-6">
+              <div className="card h-100 skeleton-card skeleton">
+                <div className="card-body">
+                  <div className="skeleton-text"></div>
+                  <div className="skeleton-text short"></div>
+                  <div className="mt-4 skeleton-text" style={{height: '40px'}}></div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       ) : (
         <div className="row g-4">
-          {classes.map(cls => (
-            <div key={cls.id} className="col-xl-4 col-lg-6 col-md-6">
+          {classes.map((cls, idx) => (
+            <div key={cls.id} className="col-xl-4 col-lg-6 col-md-6 animate-fade-in" style={{ animationDelay: `${idx * 0.1}s` }}>
               <div className="card h-100">
                 <div className="card-header d-flex justify-content-between align-items-center">
                   <h5 className="card-title mb-0 text-truncate" title={cls.name}>{cls.name}</h5>
@@ -269,10 +282,8 @@ export default function TeacherDashboard() {
               </div>
               <div className="modal-body p-0">
                 {loadingReports ? (
-                  <div className="d-flex justify-content-center py-5">
-                    <div className="spinner-border text-primary" role="status">
-                      <span className="visually-hidden">جاري التحميل...</span>
-                    </div>
+                  <div className="p-4">
+                    {[1,2,3,4].map(i => <div key={i} className="skeleton skeleton-text" style={{height: '30px', marginBottom: '15px'}}></div>)}
                   </div>
                 ) : reportsData.length === 0 ? (
                   <div className="text-center py-5">
@@ -375,8 +386,8 @@ export default function TeacherDashboard() {
               </div>
               <div className="modal-body p-0">
                 {loadingRoster ? (
-                  <div className="d-flex justify-content-center py-5">
-                    <div className="spinner-border text-primary" role="status"></div>
+                  <div className="p-4">
+                    {[1,2,3].map(i => <div key={i} className="skeleton skeleton-text" style={{height: '40px', marginBottom: '15px'}}></div>)}
                   </div>
                 ) : rosterData.length === 0 ? (
                   <div className="text-center py-5">

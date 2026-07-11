@@ -231,14 +231,15 @@ h1, h2, h3, h4, h5, h6, .font-heading {
     right: 0;
     height: 65px;
     background: rgba(255, 255, 255, 0.85) !important;
-    backdrop-filter: blur(15px) !important;
-    -webkit-backdrop-filter: blur(15px) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
     border-top: 1px solid rgba(0,0,0,0.08) !important;
     display: flex !important;
     justify-content: space-around;
     align-items: center;
     z-index: 9999;
     padding-bottom: env(safe-area-inset-bottom);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
   
   .telegram-nav .hn-nav-item {
@@ -246,23 +247,27 @@ h1, h2, h3, h4, h5, h6, .font-heading {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: var(--text-secondary);
+    color: var(--text-tertiary);
     text-decoration: none;
     flex: 1;
     height: 100%;
-    transition: color 0.2s;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     background: transparent;
     border: none;
+    position: relative;
   }
   
   .telegram-nav .hn-nav-item i {
     font-size: 1.5rem;
     margin-bottom: 3px;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
   
   .telegram-nav .hn-nav-item span {
     font-size: 0.7rem;
     font-weight: 600;
+    opacity: 0.8;
+    transition: all 0.3s;
   }
   
   .telegram-nav .hn-nav-item.active {
@@ -270,9 +275,111 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   }
   
   .telegram-nav .hn-nav-item.active i {
-    transform: scale(1.15);
-    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform: translateY(-4px) scale(1.15);
+    color: var(--primary-blue);
   }
+
+  .telegram-nav .hn-nav-item.active span {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+/* Skeleton Loaders */
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+.skeleton {
+  background: #f6f7f8;
+  background-image: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
+  background-repeat: no-repeat;
+  background-size: 1000px 100%;
+  animation-duration: 1.5s;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-name: shimmer;
+  animation-timing-function: linear;
+  border-radius: var(--radius-md);
+}
+
+.skeleton-text {
+  height: 1rem;
+  margin-bottom: 0.5rem;
+  width: 100%;
+}
+.skeleton-text.short { width: 60%; }
+.skeleton-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+.skeleton-card {
+  height: 150px;
+}
+
+/* Smooth Modal Slide Up (Telegram Style) */
+@keyframes slideUpModal {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal.show .modal-dialog {
+  animation: slideUpModal 0.3s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+}
+
+@media (max-width: 1199.98px) {
+  .modal-dialog {
+    margin: 0;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+  .modal-content {
+    border-radius: 20px 20px 0 0 !important;
+    border: none !important;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Toasts */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+.toast-message {
+  background: rgba(15, 23, 42, 0.9);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  backdrop-filter: blur(10px);
+  animation: slideDownFade 0.3s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+  pointer-events: auto;
+}
+.toast-message.success { border-left: 4px solid var(--success); }
+.toast-message.error { border-left: 4px solid var(--error); }
+.toast-message.fade-out {
+  animation: fadeOutUp 0.3s ease forwards;
+}
+@keyframes slideDownFade {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes fadeOutUp {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(-20px); opacity: 0; }
 }
 
 /* For terminal theme compatibility */

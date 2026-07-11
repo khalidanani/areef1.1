@@ -1,18 +1,22 @@
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import Login from './components/Login'
-import TeacherDashboard from './components/TeacherDashboard'
-import CurriculumBank from './components/CurriculumBank'
-import StudentChat from './components/StudentChat'
-import StudentDashboard from './components/StudentDashboard'
 import RoleSelection from './components/RoleSelection'
-import Store from './components/Store'
-import AdminSettings from './components/AdminSettings'
-import UserProfile from './components/UserProfile'
-import Support from './components/Support'
 import PWAInstallPrompt from './components/PWAInstallPrompt'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import LayoutWrapper from './components/layout/LayoutWrapper'
+import LoadingScreen from './components/LoadingScreen'
 import './index.css'
+
+// Lazy loaded components for performance scaling
+const TeacherDashboard = lazy(() => import('./components/TeacherDashboard'));
+const CurriculumBank = lazy(() => import('./components/CurriculumBank'));
+const StudentChat = lazy(() => import('./components/StudentChat'));
+const StudentDashboard = lazy(() => import('./components/StudentDashboard'));
+const Store = lazy(() => import('./components/Store'));
+const AdminSettings = lazy(() => import('./components/AdminSettings'));
+const UserProfile = lazy(() => import('./components/UserProfile'));
+const Support = lazy(() => import('./components/Support'));
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth();
@@ -54,29 +58,35 @@ function AppRoutes() {
 
   return (
     <LayoutWrapper>
-      <Routes>
-        <Route path="/teacher-dashboard" element={<ProtectedRoute><TeacherDashboard /></ProtectedRoute>} />
-        <Route path="/teacher" element={<ProtectedRoute><TeacherDashboard /></ProtectedRoute>} />
-        <Route path="/curriculum" element={<ProtectedRoute><CurriculumBank /></ProtectedRoute>} />
-        <Route path="/student-dashboard" element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>} />
-        <Route path="/student-chat/:classId" element={<ProtectedRoute><StudentChat /></ProtectedRoute>} />
-        <Route path="/store" element={<ProtectedRoute><Store /></ProtectedRoute>} />
-        <Route path="/admin" element={<ProtectedRoute><AdminSettings /></ProtectedRoute>} />
-        <Route path="/profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
-        <Route path="/support" element={<ProtectedRoute><Support /></ProtectedRoute>} />
-      </Routes>
+      <Suspense fallback={<LoadingScreen />}>
+        <Routes>
+          <Route path="/teacher-dashboard" element={<ProtectedRoute><TeacherDashboard /></ProtectedRoute>} />
+          <Route path="/teacher" element={<ProtectedRoute><TeacherDashboard /></ProtectedRoute>} />
+          <Route path="/curriculum" element={<ProtectedRoute><CurriculumBank /></ProtectedRoute>} />
+          <Route path="/student-dashboard" element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>} />
+          <Route path="/student-chat/:classId" element={<ProtectedRoute><StudentChat /></ProtectedRoute>} />
+          <Route path="/store" element={<ProtectedRoute><Store /></ProtectedRoute>} />
+          <Route path="/admin" element={<ProtectedRoute><AdminSettings /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
+          <Route path="/support" element={<ProtectedRoute><Support /></ProtectedRoute>} />
+        </Routes>
+      </Suspense>
       <PWAInstallPrompt />
     </LayoutWrapper>
   );
 }
 
+import { ToastProvider } from './contexts/ToastContext'
+
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <AppRoutes />
-      </Router>
-    </AuthProvider>
+    <ToastProvider>
+      <AuthProvider>
+        <Router>
+          <AppRoutes />
+        </Router>
+      </AuthProvider>
+    </ToastProvider>
   )
 }
 

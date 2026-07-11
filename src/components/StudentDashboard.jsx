@@ -3,15 +3,15 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import NotificationsBell from './NotificationsBell';
+import { useToast } from '../contexts/ToastContext';
 
 export default function StudentDashboard() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [joinCode, setJoinCode] = useState('');
-  const [joinError, setJoinError] = useState('');
-  const [joinSuccess, setJoinSuccess] = useState('');
 
   useEffect(() => {
     if (user) {
@@ -39,8 +39,6 @@ export default function StudentDashboard() {
 
   async function handleJoinClass(e) {
     e.preventDefault();
-    setJoinError('');
-    setJoinSuccess('');
 
     if (!joinCode.trim()) return;
 
@@ -51,7 +49,7 @@ export default function StudentDashboard() {
       .single();
 
     if (classError || !classData) {
-      setJoinError('كود الانضمام غير صحيح.');
+      toast.error('كود الانضمام غير صحيح.');
       return;
     }
 
@@ -64,12 +62,12 @@ export default function StudentDashboard() {
 
     if (enrollError) {
       if (enrollError.code === '23505') {
-        setJoinError('أنت منضم إلى هذا الفصل مسبقاً.');
+        toast.error('أنت منضم إلى هذا الفصل مسبقاً.');
       } else {
-        setJoinError('حدث خطأ أثناء الانضمام. حاول مرة أخرى.');
+        toast.error('حدث خطأ أثناء الانضمام. حاول مرة أخرى.');
       }
     } else {
-      setJoinSuccess(`تم الانضمام بنجاح إلى فصل: ${classData.name}`);
+      toast.success(`تم الانضمام بنجاح إلى فصل: ${classData.name}`);
       setJoinCode('');
       fetchEnrolledClasses();
     }
@@ -93,11 +91,9 @@ export default function StudentDashboard() {
         </div>
       </div>
 
-      <div className="card mb-4 mt-2">
+      <div className="card mb-4 mt-2 border-0 shadow-sm animate-fade-in">
         <div className="card-body p-3">
-          <h6 className="mb-2 text-primary fw-bold"><i className="ti tabler-plus me-1"></i> الانضمام لفصل جديد</h6>
-          {joinError && <div className="alert alert-danger p-2 mb-2 small">{joinError}</div>}
-          {joinSuccess && <div className="alert alert-success p-2 mb-2 small">{joinSuccess}</div>}
+          <h6 className="mb-3 text-primary fw-bold"><i className="ti tabler-plus me-1"></i> الانضمام لفصل جديد</h6>
           
           <form onSubmit={handleJoinClass} className="d-flex gap-2 align-items-center">
             <input 
@@ -119,10 +115,18 @@ export default function StudentDashboard() {
       <h5 className="mb-3 text-muted">فصولي الدراسية</h5>
 
       {loading ? (
-        <div className="d-flex justify-content-center my-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">جاري التحميل...</span>
-          </div>
+        <div className="row g-4">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="col-xl-4 col-lg-6 col-md-6">
+              <div className="card h-100 skeleton-card skeleton">
+                <div className="card-body">
+                  <div className="skeleton-text" style={{height: '30px'}}></div>
+                  <div className="skeleton-text short"></div>
+                  <div className="mt-4 skeleton-text" style={{height: '40px'}}></div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       ) : classes.length === 0 ? (
         <div className="text-center p-5 card border-dashed border-2">
@@ -135,10 +139,10 @@ export default function StudentDashboard() {
         </div>
       ) : (
         <div className="row g-4">
-          {classes.map(cls => (
-            <div key={cls.id} className="col-xl-4 col-lg-6 col-md-6">
+          {classes.map((cls, idx) => (
+            <div key={cls.id} className="col-xl-4 col-lg-6 col-md-6 animate-fade-in" style={{ animationDelay: `${idx * 0.1}s` }}>
               <div 
-                className="card h-100 cursor-pointer hover-border-primary transition-all shadow-sm" 
+                className="card h-100 cursor-pointer hover-border-primary transition-all shadow-sm"  
                 onClick={() => navigateToClass(cls)}
               >
                 <div className="card-body">
