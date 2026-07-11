@@ -52,12 +52,17 @@ export async function sendMessage(questionId, message, onChunk) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${supabaseAnonKey}`
+        'Authorization': `Bearer ${supabaseAnonKey}`,
+        'apikey': supabaseAnonKey
       },
       body: JSON.stringify({ action: 'chat', payload: { history, message } })
     });
 
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error('Edge Function Error Body:', errText);
+      throw new Error(`HTTP error! status: ${response.status}, body: ${errText}`);
+    }
 
     const reader = response.body.getReader();
     const decoder = new TextDecoder('utf-8');

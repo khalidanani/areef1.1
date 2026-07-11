@@ -119,7 +119,7 @@ export default function StudentChat() {
         });
       } catch (error) {
         console.error('AI Response Error:', error);
-        setMessages(prev => prev.slice(0, -1).concat({ sender: 'bot', text: 'عذراً، حدث خطأ في الاتصال. حاول مرة أخرى 🔄' }));
+        setMessages(prev => prev.slice(0, -1).concat({ sender: 'bot', text: `عذراً، حدث خطأ في الاتصال. حاول مرة أخرى 🔄\nتفاصيل الخطأ: ${error.message}` }));
       }
     } else {
       // Fallback mock logic (if no API key)
