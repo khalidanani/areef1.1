@@ -20,12 +20,10 @@ serve(async (req) => {
 
     const { action, payload } = await req.json();
 
-    const openRouterEndpoint = 'https://openrouter.ai/api/v1/chat/completions';
+    const openAIEndpoint = 'https://api.openai.com/v1/chat/completions';
     const defaultHeaders = {
       'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-      'HTTP-Referer': 'https://areef-ai.com',
-      'X-Title': 'Areef'
+      'Content-Type': 'application/json'
     };
 
     if (action === 'chat') {
@@ -48,7 +46,7 @@ serve(async (req) => {
         max_tokens: 500,
       };
 
-      const response = await fetch(openRouterEndpoint, {
+      const response = await fetch(openAIEndpoint, {
         method: 'POST',
         headers: defaultHeaders,
         body: JSON.stringify(requestBody)
@@ -135,7 +133,7 @@ ${conversationLog.map((m: any) => `${m.sender === 'user' ? 'الطالب' : 'ع�
         messages: [{ role: 'user', content: prompt }]
       };
 
-      const response = await fetch(openRouterEndpoint, {
+      const response = await fetch(openAIEndpoint, {
         method: 'POST',
         headers: defaultHeaders,
         body: JSON.stringify(requestBody)
@@ -182,7 +180,7 @@ ${conversationLog.map((m: any) => `${m.sender === 'user' ? 'الطالب' : 'ع�
         ]
       };
 
-      const response = await fetch(openRouterEndpoint, {
+      const response = await fetch(openAIEndpoint, {
         method: 'POST',
         headers: defaultHeaders,
         body: JSON.stringify(requestBody)
