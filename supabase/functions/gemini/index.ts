@@ -39,7 +39,7 @@ serve(async (req) => {
       messages.push({ role: 'user', content: message });
 
       const requestBody = {
-        model: "openai/gpt-4o-mini",
+        model: "gpt-4o-mini",
         messages: messages,
         stream: true,
         temperature: 0.7,
@@ -129,7 +129,7 @@ ${conversationLog.map((m: any) => `${m.sender === 'user' ? 'الطالب' : 'ع�
 }`;
 
       const requestBody = {
-        model: "openai/gpt-4o-mini",
+        model: "gpt-4o-mini",
         messages: [{ role: 'user', content: prompt }]
       };
 
@@ -168,7 +168,7 @@ ${conversationLog.map((m: any) => `${m.sender === 'user' ? 'الطالب' : 'ع�
 ]`;
 
       const requestBody = {
-        model: "openai/gpt-4o-mini", // GPT-4o-mini natively supports vision!
+        model: "gpt-4o-mini", // GPT-4o-mini natively supports vision!
         messages: [
           {
             role: "user",
