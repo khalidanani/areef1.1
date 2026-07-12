@@ -161,7 +161,24 @@ export function AuthProvider({ children }) {
     return data;
   };
 
+  const switchAccount = async () => {
+    await supabase.auth.signOut();
+  };
+
   const signOut = async () => {
+    try {
+      if (user && user.email) {
+        const email = user.email;
+        const profilesStr = localStorage.getItem('areef_saved_profiles');
+        if (profilesStr) {
+          let profiles = JSON.parse(profilesStr);
+          profiles = profiles.filter(p => p.email !== email);
+          localStorage.setItem('areef_saved_profiles', JSON.stringify(profiles));
+        }
+      }
+    } catch (e) {
+      console.error('Failed to clear saved profile on signout', e);
+    }
     await supabase.auth.signOut();
   };
 
@@ -170,12 +187,14 @@ export function AuthProvider({ children }) {
     signInWithGoogle,
     signInWithMicrosoft,
     signOut,
+    switchAccount,
     user,
     userRole,
     userRoles,
     isAdmin,
     checkUserRole,
   };
+
 
   return (
     <AuthContext.Provider value={value}>

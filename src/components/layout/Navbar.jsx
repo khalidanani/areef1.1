@@ -5,7 +5,7 @@ import { Sun, Moon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function Navbar({ toggleMenu }) {
-  const { user, signOut } = useAuth();
+  const { user, signOut, switchAccount } = useAuth();
   const { theme, toggleTheme } = useTheme();
 
   return (
@@ -61,6 +61,12 @@ export default function Navbar({ toggleMenu }) {
                       </div>
                     </div>
                   </a>
+                </li>
+                <li>
+                  <button className="dropdown-item text-secondary" onClick={switchAccount}>
+                    <i className="ti tabler-arrows-left-right me-2 ti-sm"></i>
+                    <span className="align-middle">تبديل الحساب</span>
+                  </button>
                 </li>
                 <li><div className="dropdown-divider my-1"></div></li>
                 <li>
