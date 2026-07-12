@@ -8,13 +8,7 @@ import {
   Presentation, 
   Sun, 
   Moon, 
-  BookOpen, 
-  Cpu, 
-  BarChart3, 
   Sparkles, 
-  Clock, 
-  ShoppingBag, 
-  Award, 
   ArrowLeft,
   CheckCircle2
 } from 'lucide-react';
@@ -30,10 +24,6 @@ export default function LandingRoleSelect() {
       else if (userRole === 'student') navigate('/student-dashboard');
     }
   }, [user, userRole, navigate]);
-
-  const handleSelectRole = (role) => {
-    navigate(`/login?role=${role}`);
-  };
 
   const scrollToSection = (id) => {
     const element = document.getElementById(id);
@@ -147,22 +137,6 @@ export default function LandingRoleSelect() {
           100% { transform: rotate(360deg); }
         }
 
-        .role-card {
-          cursor: pointer;
-          border: 2px solid transparent;
-          transition: all 0.3s ease;
-        }
-
-        .role-card.student:hover {
-          border-color: #2b6ccb;
-          background: rgba(37, 99, 235, 0.05);
-        }
-
-        .role-card.teacher:hover {
-          border-color: #10b981;
-          background: rgba(16, 185, 129, 0.05);
-        }
-
         /* Accent Badge */
         .accent-pill {
           background-color: var(--accent-pill);
@@ -219,7 +193,6 @@ export default function LandingRoleSelect() {
             <div className="d-none d-md-flex gap-3 text-secondary">
               <span className="cursor-pointer hover-text-primary" onClick={() => scrollToSection('features')}>المميزات</span>
               <span className="cursor-pointer hover-text-primary" onClick={() => scrollToSection('stats')}>الأرقام</span>
-              <span className="cursor-pointer hover-text-primary" onClick={() => scrollToSection('roles')}>الدخول</span>
             </div>
 
             <div className="d-flex align-items-center gap-2">
@@ -233,7 +206,7 @@ export default function LandingRoleSelect() {
                 {theme === 'dark' ? <Sun size={20} className="text-warning" /> : <Moon size={20} className="text-primary" />}
               </button>
 
-              <button onClick={() => scrollToSection('roles')} className="btn btn-primary btn-sm px-3">
+              <button onClick={() => navigate('/select-role')} className="btn btn-primary btn-sm px-3">
                 تسجيل الدخول
               </button>
             </div>
@@ -261,7 +234,7 @@ export default function LandingRoleSelect() {
             </p>
 
             <div className="d-flex flex-column flex-sm-row justify-content-center justify-content-lg-start gap-3">
-              <button onClick={() => scrollToSection('roles')} className="btn btn-gradient-primary btn-lg px-4 py-3 fs-6 d-flex align-items-center justify-content-center gap-2">
+              <button onClick={() => navigate('/select-role')} className="btn btn-gradient-primary btn-lg px-4 py-3 fs-6 d-flex align-items-center justify-content-center gap-2">
                 <span>ابدأ رحلتك التعليمية الآن</span>
                 <ArrowLeft size={18} />
               </button>
@@ -283,7 +256,7 @@ export default function LandingRoleSelect() {
       {/* Features Section */}
       <section id="features" className="container py-5 my-5">
         <div className="text-center mb-5">
-          <h2 className="display-6 fw-bold mb-3">كيف يخدم منصة <span className="text-primary">عريف</span> العملية التعليمية؟</h2>
+          <h2 className="display-6 fw-bold mb-3">كيف يخدم منصة <span className="text-primary">عريف</span> العملية التعليمية?</h2>
           <p className="text-muted lead mx-auto" style={{ maxWidth: '600px' }}>حلول ذكية متكاملة مصممة لتلبية احتياجات أركان التعليم الأساسية.</p>
         </div>
 
@@ -317,8 +290,8 @@ export default function LandingRoleSelect() {
                   <span><strong>تقارير ذكية للأداء:</strong> لوحة تحليلات تقيس مستوى الصف وتحدد نقاط الضعف بدقة.</span>
                 </li>
               </ul>
-              <button onClick={() => handleSelectRole('teacher')} className="btn btn-success mt-4 py-2-5 w-100">
-                تسجيل كمعلم
+              <button onClick={() => navigate('/select-role')} className="btn btn-success mt-4 py-2-5 w-100">
+                الدخول كمعلم
               </button>
             </div>
           </div>
@@ -352,8 +325,8 @@ export default function LandingRoleSelect() {
                   <span><strong>متجر الهدايا:</strong> استبدال النقاط بأدوات وعناصر تعبيرية تزيد من حماس الطالب.</span>
                 </li>
               </ul>
-              <button onClick={() => handleSelectRole('student')} className="btn btn-primary mt-4 py-2-5 w-100">
-                تسجيل كطالب
+              <button onClick={() => navigate('/select-role')} className="btn btn-primary mt-4 py-2-5 w-100">
+                الدخول كطالب
               </button>
             </div>
           </div>
@@ -383,50 +356,6 @@ export default function LandingRoleSelect() {
                 <h3 className="display-5 fw-bold text-primary mb-2">99%</h3>
                 <p className="lead m-0 fw-semibold">رضا وتفاعل</p>
                 <small className="text-muted">من قبل المعلمين والطلاب المشتركين</small>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Role Selection (Start Section) */}
-      <section id="roles" className="container py-5 my-5 pb-5">
-        <div className="text-center mb-5">
-          <h2 className="display-6 fw-bold mb-3">ابدأ رحلتك مع عريف اليوم</h2>
-          <p className="text-muted lead mx-auto" style={{ maxWidth: '500px' }}>اختر دورك للدخول إلى لوحة التحكم الخاصة بك</p>
-        </div>
-
-        <div className="row justify-content-center g-4 px-3" style={{ maxWidth: '800px', margin: '0 auto' }}>
-          <div className="col-12 col-md-6">
-            <div 
-              onClick={() => handleSelectRole('student')}
-              className="glass-card role-card student h-100 text-center p-5 d-flex flex-column align-items-center"
-            >
-              <div className="mb-4 bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style={{ width: '90px', height: '90px' }}>
-                <GraduationCap size={44} className="text-primary" />
-              </div>
-              <h3 className="fw-bold mb-3 text-primary">بوابة الطالب</h3>
-              <p className="text-muted mb-4">ذاكر دروسك بذكاء، وحل الواجبات المدرسية مع المساعد الذكي، واحصد النقاط لاستبدالها بمكافآت رائعة.</p>
-              <div className="mt-auto text-primary fw-semibold d-flex align-items-center gap-1">
-                <span>الدخول كطالب</span>
-                <ArrowLeft size={16} />
-              </div>
-            </div>
-          </div>
-
-          <div className="col-12 col-md-6">
-            <div 
-              onClick={() => handleSelectRole('teacher')}
-              className="glass-card role-card teacher h-100 text-center p-5 d-flex flex-column align-items-center"
-            >
-              <div className="mb-4 bg-success bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style={{ width: '90px', height: '90px' }}>
-                <Presentation size={44} className="text-success" />
-              </div>
-              <h3 className="fw-bold mb-3 text-success">بوابة المعلم</h3>
-              <p className="text-muted mb-4">أدر فصولك الدراسية، وأنشئ واجباتك، واطلع على تقارير أداء الطلاب الشاملة والمصممة بالذكاء الاصطناعي.</p>
-              <div className="mt-auto text-success fw-semibold d-flex align-items-center gap-1">
-                <span>الدخول كمعلم</span>
-                <ArrowLeft size={16} />
               </div>
             </div>
           </div>

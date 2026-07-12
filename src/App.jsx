@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
 import LandingRoleSelect from './components/LandingRoleSelect'
 import Login from './components/Login'
+import SelectLoginRole from './components/SelectLoginRole'
 import RoleSelection from './components/RoleSelection'
 import PWAInstallPrompt from './components/PWAInstallPrompt'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
@@ -49,7 +50,7 @@ function ProtectedRoute({ children, allowedRoles }) {
 
 function AppRoutes() {
   const location = useLocation();
-  const isAuthPage = location.pathname === '/' || location.pathname === '/login' || location.pathname === '/role-selection';
+  const isAuthPage = location.pathname === '/' || location.pathname === '/login' || location.pathname === '/role-selection' || location.pathname === '/select-role';
   
   if (isAuthPage) {
     if (location.pathname === '/') {
@@ -63,6 +64,7 @@ function AppRoutes() {
               <div className="container-xxl flex-grow-1 container-p-y d-flex justify-content-center align-items-center">
                 <Routes>
                   <Route path="/login" element={<Login />} />
+                  <Route path="/select-role" element={<SelectLoginRole />} />
                   <Route path="/role-selection" element={<ProtectedRoute><RoleSelection /></ProtectedRoute>} />
                 </Routes>
               </div>
