@@ -1,0 +1,848 @@
+/* ============================================================
+   support-chat.css — design system for /support/* pages
+   Mirrors the Halaqa Details design language: Vuexy theme tokens,
+   icon-tile patterns, semantic color classes, dark-mode aware.
+   ============================================================ */
+
+/* ------------ Stat tiles row (admin) ------------ */
+.support-stats-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.support-stat-tile {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem 0.875rem;
+  border-radius: 10px;
+  background: rgba(var(--bs-body-color-rgb), 0.04);
+  border: 1px solid var(--bs-border-color);
+  flex: 1 1 200px;
+  min-width: 0;
+}
+.support-stat-tile-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.support-stat-tile-icon i {
+  font-size: 18px;
+}
+.support-stat-tile-icon.is-primary {
+  color: var(--bs-primary);
+  background: rgba(var(--bs-primary-rgb), 0.12);
+}
+.support-stat-tile-icon.is-warning {
+  color: var(--bs-warning);
+  background: rgba(var(--bs-warning-rgb), 0.15);
+}
+.support-stat-tile-icon.is-info {
+  color: var(--bs-info);
+  background: rgba(var(--bs-info-rgb), 0.15);
+}
+.support-stat-tile-icon.is-success {
+  color: var(--bs-success);
+  background: rgba(var(--bs-success-rgb), 0.15);
+}
+.support-stat-tile-icon.is-danger {
+  color: var(--bs-danger);
+  background: rgba(var(--bs-danger-rgb), 0.15);
+}
+.support-stat-tile-label {
+  font-size: 0.75rem;
+  color: var(--bs-secondary-color);
+  display: block;
+  line-height: 1.2;
+}
+.support-stat-tile-value {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--bs-heading-color);
+}
+
+/* ------------ Status / Priority / Assignment badges ------------ */
+.support-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.35rem 0.625rem;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+.support-badge i {
+  font-size: 14px;
+}
+.support-badge-status-open {
+  background: rgba(var(--bs-warning-rgb), 0.15);
+  color: var(--bs-warning-text-emphasis, var(--bs-warning));
+}
+.support-badge-status-inprogress {
+  background: rgba(var(--bs-info-rgb), 0.15);
+  color: var(--bs-info-text-emphasis, var(--bs-info));
+}
+.support-badge-status-solved {
+  background: rgba(var(--bs-success-rgb), 0.15);
+  color: var(--bs-success-text-emphasis, var(--bs-success));
+}
+.support-badge-status-closed {
+  background: rgba(var(--bs-secondary-rgb), 0.15);
+  color: var(--bs-secondary-color);
+}
+
+.support-badge-priority-high {
+  background: rgba(var(--bs-danger-rgb), 0.15);
+  color: var(--bs-danger-text-emphasis, var(--bs-danger));
+}
+/* Medium uses a true yellow rather than --bs-warning (which is orange in this theme) */
+.support-badge-priority-medium {
+  background: rgba(234, 179, 8, 0.15);
+  color: #a16207;
+}
+.support-badge-priority-low {
+  background: rgba(var(--bs-success-rgb), 0.15);
+  color: var(--bs-success-text-emphasis, var(--bs-success));
+}
+
+.support-badge-assign-set {
+  background: rgba(var(--bs-info-rgb), 0.15);
+  color: var(--bs-info-text-emphasis, var(--bs-info));
+}
+.support-badge-assign-unset {
+  background: rgba(var(--bs-secondary-rgb), 0.15);
+  color: var(--bs-secondary-color);
+}
+
+.support-priority-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.support-priority-dot-high {
+  background: var(--bs-danger);
+}
+.support-priority-dot-medium {
+  background: #eab308;
+}
+.support-priority-dot-low {
+  background: var(--bs-success);
+}
+
+/* ------------ Filter pills (replaces .filter-chip) ------------ */
+.support-filter-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.support-filter-pills .nav-link {
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 10px;
+  padding: 0 0.875rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  background: var(--bs-card-bg);
+  border: 1px solid var(--bs-border-color);
+  color: var(--bs-body-color);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+.support-filter-pills .nav-link:hover {
+  border-color: var(--bs-primary);
+  color: var(--bs-primary);
+  background: rgba(var(--bs-primary-rgb), 0.06);
+}
+.support-filter-pills .nav-link.active {
+  background: var(--bs-primary);
+  border-color: var(--bs-primary);
+  color: #fff;
+}
+.support-filter-pills .nav-link i {
+  font-size: 16px;
+}
+.support-filter-pills .nav-link.active i {
+  color: #fff;
+}
+.support-filter-pills .chip-count {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.0625rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(var(--bs-body-color-rgb), 0.06);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+.support-filter-pills .nav-link.active .chip-count {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+/* ------------ Ticket list: table (desktop) + cards (mobile) ------------ */
+.support-ticket-list-cards {
+  display: none;
+  padding: 1rem;
+}
+@media (max-width: 767.98px) {
+  .support-ticket-list-table {
+    display: none;
+  }
+  .support-ticket-list-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
+
+.support-ticket-card {
+  background: var(--bs-card-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  text-decoration: none;
+  color: inherit;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.support-ticket-card:hover {
+  border-color: var(--bs-primary);
+  box-shadow: 0 2px 8px rgba(var(--bs-primary-rgb), 0.08);
+  text-decoration: none;
+  color: inherit;
+}
+.support-ticket-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+.support-ticket-card-id {
+  font-size: 0.75rem;
+  color: var(--bs-secondary-color);
+  font-weight: 500;
+  display: block;
+  margin-bottom: 0.125rem;
+}
+.support-ticket-card-subject {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--bs-heading-color);
+  display: block;
+}
+.support-ticket-card-user {
+  font-size: 0.8125rem;
+  color: var(--bs-secondary-color);
+  margin-top: 0.125rem;
+}
+.support-ticket-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+.support-ticket-card-footer {
+  font-size: 0.75rem;
+  color: var(--bs-secondary-color);
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--bs-border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Remove the spurious top border that Bootstrap puts on the first thead row,
+   which doubles up against the card's own top border. */
+.support-ticket-list-table .table > thead > tr:first-child > * {
+  border-top: 0;
+}
+
+/* Subject hierarchy in admin desktop table */
+.support-subject-cell {
+  min-width: 200px;
+}
+.support-subject {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--bs-heading-color);
+  display: block;
+  line-height: 1.3;
+}
+
+/* Ticket # column */
+.support-id-cell {
+  white-space: nowrap;
+}
+
+/* User column: name on top, smaller user id below */
+.support-user-cell {
+  min-width: 180px;
+}
+.support-user-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--bs-heading-color);
+  line-height: 1.3;
+}
+.support-user-id {
+  font-size: 0.7rem;
+  color: var(--bs-secondary-color);
+  font-family: var(--bs-font-monospace, monospace);
+  margin-top: 0.125rem;
+  word-break: break-all;
+}
+
+.support-id-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.0625rem 0.4rem;
+  border-radius: 6px;
+  background: rgba(var(--bs-body-color-rgb), 0.05);
+  color: var(--bs-secondary-color);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Small initial-style avatar for the admin management table */
+.support-admin-avatar {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: rgba(var(--bs-primary-rgb), 0.12);
+  color: var(--bs-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Lookup status pill next to the user-id input on /support/admins */
+.lookup-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.2;
+  min-height: 1.2rem;
+}
+.lookup-status:empty { display: none; }
+.lookup-status i { font-size: 14px; }
+.lookup-status-loading { color: var(--bs-secondary-color); }
+.lookup-status-ok      { color: var(--bs-success); }
+.lookup-status-bad     { color: var(--bs-danger); }
+
+/* Inline code-style chip for user IDs (admin management table) */
+.support-user-id-code {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+  background: rgba(var(--bs-body-color-rgb), 0.05);
+  border: 1px solid var(--bs-border-color);
+  color: var(--bs-body-color);
+  font-family: var(--bs-font-monospace, monospace);
+  font-size: 0.8125rem;
+  word-break: break-all;
+}
+
+/* ------------ Closed-ticket dim ------------ */
+.support-ticket-list-table tr[data-status='closed'] {
+  opacity: 0.55;
+}
+.support-ticket-list-table tr[data-status='closed']:hover {
+  opacity: 0.85;
+}
+.support-ticket-card[data-status='closed'] {
+  opacity: 0.55;
+}
+.support-ticket-card[data-status='closed']:hover {
+  opacity: 0.9;
+}
+
+/* ------------ Unread-reply dot (sits before the # chip) ------------ */
+.support-unread-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--bs-success);
+  margin-inline-end: 0.4rem;
+  vertical-align: middle;
+  box-shadow: 0 0 0 0 rgba(var(--bs-success-rgb), 0.6);
+  animation: support-unread-pulse 1.6s ease-out infinite;
+}
+@keyframes support-unread-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--bs-success-rgb), 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(var(--bs-success-rgb), 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--bs-success-rgb), 0);
+  }
+}
+
+/* ------------ Empty state ------------ */
+.support-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--bs-secondary-color);
+}
+.support-empty-icon {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 1rem;
+  border-radius: 16px;
+  background: rgba(var(--bs-primary-rgb), 0.08);
+  color: var(--bs-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.support-empty-icon i {
+  font-size: 32px;
+}
+.support-empty-title {
+  color: var(--bs-heading-color);
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+/* ------------ Action button ------------ */
+.support-action-btn {
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 8px;
+  background: var(--bs-card-bg);
+  border: 1px solid var(--bs-border-color);
+  padding: 0 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--bs-body-color);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+.support-action-btn:hover {
+  border-color: var(--bs-primary);
+  color: var(--bs-primary);
+  background: rgba(var(--bs-primary-rgb), 0.06);
+  text-decoration: none;
+}
+.support-action-btn i {
+  color: var(--bs-primary);
+  font-size: 16px;
+}
+
+/* ============================================================
+   Chat page
+   ============================================================ */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 200px);
+  min-height: 500px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.support-chat-hero {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--bs-border-color);
+  background: var(--bs-card-bg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.support-chat-hero-main {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  min-width: 0;
+  flex: 1;
+}
+.support-chat-hero-icon {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: rgba(var(--bs-primary-rgb), 0.12);
+  color: var(--bs-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.support-chat-hero-icon i {
+  font-size: 22px;
+}
+.support-chat-hero-text {
+  min-width: 0;
+}
+.support-chat-hero-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--bs-heading-color);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---- Mobile chat layout ---- */
+@media (max-width: 767.98px) {
+  .chat-container {
+    height: calc(100vh - 160px);
+    min-height: 400px;
+  }
+  .support-chat-hero {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+  .support-chat-hero-main {
+    min-width: 0;
+    width: 100%;
+  }
+  .support-chat-hero-icon {
+    width: 40px;
+    height: 40px;
+  }
+  .support-chat-hero-icon i {
+    font-size: 18px;
+  }
+  .support-chat-hero-title {
+    white-space: normal;
+    font-size: 0.9375rem;
+  }
+  .support-chat-hero-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .message-bubble {
+    max-width: 85%;
+  }
+  .chat-input-area-stacked .chat-input-textarea {
+    min-height: 80px;
+  }
+}
+.support-chat-hero-meta {
+  font-size: 0.8125rem;
+  color: var(--bs-secondary-color);
+  margin: 0.125rem 0 0;
+}
+.support-chat-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Message bubbles */
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.875rem;
+  background: var(--bs-body-bg);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.chat-input-area {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--bs-border-color);
+  background: var(--bs-card-bg);
+}
+
+/* Stacked input layout: textarea on top, actions row below (email-style) */
+.chat-input-area-stacked .chat-input-textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 120px;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  padding: 0.75rem 0.875rem;
+  border-radius: 10px;
+  border: 1px solid var(--bs-border-color);
+  background: var(--bs-body-bg);
+}
+.chat-input-area-stacked .chat-input-textarea:focus {
+  border-color: var(--bs-primary);
+  box-shadow: 0 0 0 0.15rem rgba(var(--bs-primary-rgb), 0.15);
+  outline: none;
+}
+.chat-input-area-stacked .chat-input-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+.message-bubble {
+  max-width: 70%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 12px;
+  position: relative;
+  word-wrap: break-word;
+  /* Preserve newlines AND consecutive spaces from textarea sends.
+     Cascades to children (.message-text, etc.) so multi-line messages
+     render the same way regardless of which side is viewing. */
+  white-space: pre-wrap;
+}
+.message-user {
+  align-self: flex-end;
+  background: var(--bs-primary);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+.message-admin {
+  align-self: flex-start;
+  background: var(--bs-card-bg);
+  border: 1px solid var(--bs-border-color);
+  color: var(--bs-body-color);
+  border-bottom-left-radius: 4px;
+}
+.message-time {
+  font-size: 0.7rem;
+  opacity: 0.7;
+  margin-top: 0.25rem;
+}
+.message-user .message-time {
+  color: rgba(255, 255, 255, 0.75);
+  text-align: left;
+}
+.message-admin .message-time {
+  color: var(--bs-secondary-color);
+  text-align: right;
+}
+.message-sender {
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: var(--bs-primary);
+}
+.message-attachment img {
+  max-width: 100%;
+  max-height: 280px;
+  border-radius: 8px;
+  margin-top: 0.25rem;
+  cursor: zoom-in;
+  transition: opacity 0.2s;
+}
+.message-attachment img:hover {
+  opacity: 0.9;
+}
+
+/* Empty state inside chat (new ticket, no messages yet) */
+.chat-empty {
+  margin: auto;
+  text-align: center;
+  color: var(--bs-secondary-color);
+  padding: 2rem;
+  max-width: 420px;
+}
+.chat-empty-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: rgba(var(--bs-primary-rgb), 0.08);
+  color: var(--bs-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+.chat-empty-icon i {
+  font-size: 28px;
+}
+.chat-empty-title {
+  color: var(--bs-heading-color);
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.attachment-preview {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 0.5rem;
+}
+.attachment-preview img {
+  max-height: 120px;
+  border-radius: 8px;
+  border: 2px solid var(--bs-border-color);
+}
+.attachment-preview .remove-attachment {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--bs-danger);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Status banner becomes a Bootstrap alert utility (via classes) */
+.support-status-banner {
+  margin: 0;
+  border-radius: 0;
+  text-align: center;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 0.625rem 1rem;
+}
+
+.dropdown-menu {
+  min-width: 160px;
+}
+
+/* ============================================================
+   Chat polish — connection pill, inline error, char counter,
+   upload progress, optimistic + failed message states.
+   ============================================================ */
+
+/* Preserve newlines from textarea sends — without this, "line1\nline2"
+   collapses to "line1 line2" in the rendered bubble. */
+.message-text {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Connection state pill in the chat header */
+.connection-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.55rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.2;
+  background: rgba(var(--bs-body-color-rgb), 0.06);
+  color: var(--bs-secondary-color);
+}
+.connection-pill .connection-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  display: inline-block;
+}
+.connection-pill-connecting   { color: var(--bs-secondary-color); }
+.connection-pill-connecting   .connection-dot { background: var(--bs-secondary-color); animation: connection-pulse 1.4s ease-in-out infinite; }
+.connection-pill-connected    { color: var(--bs-success); background: rgba(var(--bs-success-rgb), 0.1); }
+.connection-pill-connected    .connection-dot { background: var(--bs-success); }
+.connection-pill-reconnecting { color: var(--bs-warning); background: rgba(var(--bs-warning-rgb), 0.12); }
+.connection-pill-reconnecting .connection-dot { background: var(--bs-warning); animation: connection-pulse 0.9s ease-in-out infinite; }
+.connection-pill-disconnected { color: var(--bs-danger); background: rgba(var(--bs-danger-rgb), 0.12); }
+.connection-pill-disconnected .connection-dot { background: var(--bs-danger); }
+@keyframes connection-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.35; }
+}
+
+/* Inline error banner under the input area (replaces alert popups) */
+.chat-inline-error {
+  background: rgba(var(--bs-danger-rgb), 0.1);
+  color: var(--bs-danger);
+  border: 1px solid rgba(var(--bs-danger-rgb), 0.25);
+  border-radius: 8px;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.8125rem;
+  margin-bottom: 0.6rem;
+}
+
+/* Char counter under the textarea */
+.chat-char-counter {
+  font-size: 0.7rem;
+  color: var(--bs-secondary-color);
+  margin-inline-end: auto;  /* push to the start so Send button stays at end */
+  font-variant-numeric: tabular-nums;
+}
+.chat-char-counter-warn {
+  color: var(--bs-warning);
+  font-weight: 600;
+}
+
+/* Upload progress bar overlaid on the attachment preview */
+.upload-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.15);
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  overflow: hidden;
+}
+.upload-progress-fill {
+  height: 100%;
+  background: var(--bs-primary);
+  width: 0%;
+  transition: width 0.15s ease-out;
+}
+
+/* "ردّ: <admin name>" footer shown only on admin viewer's bubbles so
+   admins can see who on the team replied. Server-side filtered (the
+   senderAdminName never reaches user-side payloads). */
+.message-replied-by {
+  font-size: 0.7rem;
+  font-weight: 500;
+  margin-top: 0.35rem;
+  padding-top: 0.35rem;
+  border-top: 1px dashed rgba(255, 255, 255, 0.25);
+  opacity: 0.85;
+}
+/* Admin bubbles use the card-bg color and lower-contrast text — adjust the
+   divider so it's visible on the lighter background too. */
+.message-admin .message-replied-by {
+  border-top-color: var(--bs-border-color);
+  color: var(--bs-secondary-color);
+  opacity: 1;
+}
+
+/* Send-status pill above the input area (replaces optimistic bubbles) */
+.chat-send-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.2;
+  margin: 0.25rem 0 0.85rem;
+  width: fit-content;
+}
+.chat-send-status i { font-size: 15px; }
+.chat-send-status-sending { background: rgba(var(--bs-body-color-rgb), 0.06); color: var(--bs-secondary-color); }
+.chat-send-status-sent    { background: rgba(var(--bs-success-rgb), 0.12);    color: var(--bs-success); }
+.chat-send-status-failed  { background: rgba(var(--bs-danger-rgb), 0.12);     color: var(--bs-danger); }

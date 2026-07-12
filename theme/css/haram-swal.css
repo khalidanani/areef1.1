@@ -1,0 +1,428 @@
+/* ════════════════════════════════════════════════════════════════════════
+   HARAM SweetAlert2 theme — global stylesheet
+   Applies via the `.haram-swal` popup class (auto-injected by haram-swal.js).
+   Supports both modal and toast variants, RTL + LTR (via logical properties).
+   ──────────────────────────────────────────────────────────────────────── */
+
+/* ────────────────────────────────────────────────────────────────────────
+   1. Backdrop — matches Bootstrap modal-backdrop colour (#97959e @ 0.5)
+   ──────────────────────────────────────────────────────────────────────── */
+.swal2-container.haram-swal-backdrop-show,
+.haram-swal-backdrop-show {
+  background-color: rgba(151, 149, 158, 0.5) !important;
+}
+
+/* ────────────────────────────────────────────────────────────────────────
+   2. Modal popup container
+   ──────────────────────────────────────────────────────────────────────── */
+.haram-swal {
+  border-radius: 16px !important;
+  padding: 28px !important;
+  background-color: var(--bs-modal-bg, var(--bs-paper-bg, var(--bs-body-bg, #fff))) !important;
+  border: 1px solid var(--bs-border-color) !important;
+  box-shadow: var(--bs-modal-box-shadow, var(--bs-box-shadow-lg, 0 0.25rem 1.125rem 0 rgba(47, 43, 61, 0.16))) !important;
+  font-family: inherit !important;
+  max-width: 440px !important;
+  opacity: 1 !important;
+  will-change: transform, opacity;
+}
+
+/* ────────────────────────────────────────────────────────────────────────
+   3. Modal icon — square tinted container (dashboard pattern)
+   `:not(.swal2-toast)` scopes the modal styling away from toasts.
+   ──────────────────────────────────────────────────────────────────────── */
+html body .swal2-container .swal2-popup.haram-swal:not(.swal2-toast) .swal2-icon,
+.haram-swal:not(.swal2-toast) .swal2-icon {
+  width: 64px !important;
+  height: 64px !important;
+  border-radius: 16px !important;
+  border: none !important;
+  margin: 0 auto 20px auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(var(--haram-swal-rgb, 45, 90, 69), 0.12) !important;
+  justify-self: center !important;
+  place-self: center !important;
+  grid-column: 1 / -1 !important;
+}
+
+/* Hide SweetAlert's built-in vector graphics — we use Tabler icons via iconHtml */
+.haram-swal:not(.swal2-toast) .swal2-icon > :not(.swal2-icon-content),
+.haram-swal:not(.swal2-toast) .swal2-icon .swal2-success-line-tip,
+.haram-swal:not(.swal2-toast) .swal2-icon .swal2-success-line-long,
+.haram-swal:not(.swal2-toast) .swal2-icon .swal2-success-circular-line-left,
+.haram-swal:not(.swal2-toast) .swal2-icon .swal2-success-circular-line-right,
+.haram-swal:not(.swal2-toast) .swal2-icon .swal2-success-fix,
+.haram-swal:not(.swal2-toast) .swal2-icon .swal2-success-ring,
+.haram-swal:not(.swal2-toast) .swal2-icon .swal2-x-mark,
+.haram-swal:not(.swal2-toast) .swal2-icon::before,
+.haram-swal:not(.swal2-toast) .swal2-icon::after {
+  display: none !important;
+}
+
+.haram-swal:not(.swal2-toast) .swal2-icon .swal2-icon-content {
+  font-size: 36px !important;
+  line-height: 1 !important;
+  color: rgb(var(--haram-swal-rgb, 45, 90, 69)) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.haram-swal:not(.swal2-toast) .swal2-icon .swal2-icon-content .ti {
+  font-size: 36px !important;
+  color: inherit !important;
+}
+
+/* Per-icon-type colours (modal popup) */
+.haram-swal .swal2-icon.swal2-success  { --haram-swal-rgb: 45, 90, 69; }
+.haram-swal .swal2-icon.swal2-error    { --haram-swal-rgb: 220, 53, 69; }
+.haram-swal .swal2-icon.swal2-warning  { --haram-swal-rgb: 196, 168, 74; }
+.haram-swal .swal2-icon.swal2-info     { --haram-swal-rgb: 122, 155, 181; }
+.haram-swal .swal2-icon.swal2-question { --haram-swal-rgb: 107, 155, 122; }
+
+/* ────────────────────────────────────────────────────────────────────────
+   4. Modal title — centred. `:not(.swal2-toast)` so toast keeps its own
+   left-aligned title style. Many fallback selectors to beat vendor rules.
+   ──────────────────────────────────────────────────────────────────────── */
+html body .swal2-container .swal2-popup.haram-swal:not(.swal2-toast) .haram-swal-title.swal2-title,
+html[dir="rtl"] body .swal2-container .swal2-popup.haram-swal:not(.swal2-toast) h2.swal2-title,
+html body .swal2-container .swal2-popup.haram-swal:not(.swal2-toast) h2.swal2-title,
+.haram-swal:not(.swal2-toast) .haram-swal-title.swal2-title,
+.haram-swal:not(.swal2-toast) h2.swal2-title {
+  font-family: inherit !important;
+  font-size: 1.25rem !important;
+  font-weight: 700 !important;
+  color: var(--bs-heading-color, var(--bs-body-color)) !important;
+  margin: 0 auto 8px auto !important;
+  margin-block: 0 8px !important;
+  margin-inline: auto !important;
+  padding: 0 !important;
+  padding-inline-start: 0 !important;
+  padding-inline-end: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  line-height: 1.35 !important;
+  text-align: center !important;
+  text-align-last: center !important;
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  max-inline-size: none !important;
+  min-inline-size: 0 !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+  inset-inline-start: auto !important;
+  inset-inline-end: auto !important;
+  left: auto !important;
+  right: auto !important;
+  justify-self: center !important;
+  place-self: center !important;
+  align-self: stretch !important;
+  grid-column: 1 / -1 !important;
+  unicode-bidi: plaintext;
+}
+
+/* ────────────────────────────────────────────────────────────────────────
+   5. Modal body / html-container — centred.
+   ──────────────────────────────────────────────────────────────────────── */
+html body .swal2-container .swal2-popup.haram-swal:not(.swal2-toast) .haram-swal-text.swal2-html-container,
+html[dir="rtl"] body .swal2-container .swal2-popup.haram-swal:not(.swal2-toast) .swal2-html-container,
+html body .swal2-container .swal2-popup.haram-swal:not(.swal2-toast) .swal2-html-container,
+.haram-swal:not(.swal2-toast) .haram-swal-text.swal2-html-container,
+.haram-swal:not(.swal2-toast) .swal2-html-container {
+  font-family: inherit !important;
+  font-size: 0.9rem !important;
+  color: var(--bs-secondary-color) !important;
+  margin: 0 auto !important;
+  margin-inline: auto !important;
+  padding: 0 !important;
+  padding-inline-start: 0 !important;
+  padding-inline-end: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  line-height: 1.55 !important;
+  text-align: center !important;
+  text-align-last: center !important;
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  max-inline-size: none !important;
+  min-inline-size: 0 !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+  inset-inline-start: auto !important;
+  inset-inline-end: auto !important;
+  left: auto !important;
+  right: auto !important;
+  justify-self: center !important;
+  place-self: center !important;
+  align-self: stretch !important;
+  grid-column: 1 / -1 !important;
+}
+
+/* ────────────────────────────────────────────────────────────────────────
+   6. Modal actions row + buttons
+   ──────────────────────────────────────────────────────────────────────── */
+html body .swal2-container .swal2-popup.haram-swal:not(.swal2-toast) .swal2-actions,
+.haram-swal:not(.swal2-toast) .swal2-actions {
+  margin: 24px 0 0 0 !important;
+  margin-block: 24px 0 !important;
+  margin-inline: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  inline-size: 100% !important;
+  max-width: 100% !important;
+  max-inline-size: none !important;
+  gap: 8px !important;
+  flex-wrap: wrap !important;
+  justify-self: center !important;
+  place-self: center !important;
+  grid-column: 1 / -1 !important;
+  text-align: center !important;
+}
+
+/* Per-button reset — defeats activities.css `flex: 1` and vendor margins */
+html body .swal2-container .swal2-popup.haram-swal:not(.swal2-toast) .swal2-actions .btn,
+html body .swal2-container .swal2-popup.haram-swal:not(.swal2-toast) .swal2-actions > button,
+.haram-swal:not(.swal2-toast) .swal2-actions .btn,
+.haram-swal:not(.swal2-toast) .swal2-actions > button {
+  flex: 0 0 auto !important;
+  margin: 0 !important;
+  margin-block: 0 !important;
+  margin-inline: 0 !important;
+  margin-inline-start: 0 !important;
+  margin-inline-end: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  max-width: none !important;
+  min-width: 100px !important;
+}
+
+.haram-swal .swal2-actions .btn {
+  height: 40px !important;
+  border-radius: 8px !important;
+  padding: 0 20px !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+  box-shadow: none !important;
+}
+.haram-swal .swal2-actions .btn[style*="display: none"] { display: none !important; }
+.haram-swal .swal2-actions .btn:hover {
+  transform: translateY(-2px) !important;
+}
+.haram-swal .swal2-actions .btn:focus {
+  box-shadow: 0 0 0 .15rem rgba(var(--bs-primary-rgb), .15) !important;
+}
+
+/* ────────────────────────────────────────────────────────────────────────
+   7. Modal inputs
+   ──────────────────────────────────────────────────────────────────────── */
+.haram-swal .swal2-input,
+.haram-swal .swal2-textarea,
+.haram-swal .swal2-select {
+  height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--bs-border-color) !important;
+  border-radius: 8px !important;
+  font-size: 0.875rem !important;
+  margin: 16px 0 0 0 !important;
+  background: var(--bs-body-bg) !important;
+  color: var(--bs-body-color) !important;
+  font-family: inherit;
+  box-shadow: none !important;
+}
+.haram-swal .swal2-input:focus,
+.haram-swal .swal2-textarea:focus,
+.haram-swal .swal2-select:focus {
+  border-color: rgb(45, 90, 69) !important;
+  box-shadow: 0 0 0 .15rem rgba(45, 90, 69, 0.12) !important;
+  outline: none !important;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   8. TOAST variant — bilingual block layout (RTL + LTR)
+   ──────────────────────────────────────────────────────────────────────── */
+
+/* CRITICAL: force the toast's own direction so logical properties flip.
+   SweetAlert2 does NOT auto-set direction on the popup. */
+html body .swal2-container .swal2-popup.haram-swal.swal2-toast { direction: ltr; }
+html body .swal2-container .swal2-popup.haram-swal.swal2-toast:dir(rtl),
+html body .swal2-container .swal2-popup.haram-swal.swal2-toast[dir="rtl"],
+[dir="rtl"] .swal2-container .swal2-popup.haram-swal.swal2-toast { direction: rtl; }
+
+/* Toast container */
+html body .swal2-container .swal2-popup.haram-swal.swal2-toast {
+  background-color: color-mix(in srgb, rgb(var(--toast-rgb, 40, 199, 111)) 8%, var(--bs-modal-bg, #fff)) !important;
+  border: 1px solid color-mix(in srgb, rgb(var(--toast-rgb, 40, 199, 111)) 28%, var(--bs-border-color, #d3d3d3)) !important;
+  border-inline-start: 4px solid rgb(var(--toast-rgb, 40, 199, 111)) !important;
+  border-radius: 8px !important;
+  display: block !important;
+  grid-template-columns: none !important;
+  grid-template-rows: none !important;
+  grid-template-areas: none !important;
+  padding: 16px 18px !important;
+  padding-inline-start: 60px !important;
+  padding-inline-end: 48px !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06) !important;
+  min-width: 320px !important;
+  max-width: 440px !important;
+  position: relative !important;
+  opacity: 1 !important;
+}
+
+/* Toast icon — pinned to inline-start (RIGHT in RTL, LEFT in LTR) */
+html body .swal2-container .swal2-popup.haram-swal.swal2-toast .swal2-icon {
+  position: absolute !important;
+  inset-inline-start: 14px !important;
+  inset-inline-end: auto !important;
+  inset-block-start: 18px !important;
+  inset-block-end: auto !important;
+  transform: none !important;
+  grid-area: unset !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 24px !important;
+  min-width: 24px !important;
+  height: 24px !important;
+  border: 1.5px solid rgb(var(--toast-rgb, 40, 199, 111)) !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  animation: none !important;
+  box-sizing: border-box !important;
+}
+
+/* Toast icon glyph (Tabler) */
+html body .swal2-container .swal2-popup.haram-swal.swal2-toast .swal2-icon .ti,
+html body .swal2-container .swal2-popup.haram-swal.swal2-toast .swal2-icon .swal2-icon-content {
+  font-size: 14px !important;
+  color: rgb(var(--toast-rgb, 40, 199, 111)) !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Toast title — start-aligned (right in RTL) */
+html body .swal2-container .swal2-popup.haram-swal.swal2-toast .swal2-title,
+html body .swal2-container .swal2-popup.haram-swal.swal2-toast .haram-swal-title {
+  grid-area: unset !important;
+  font-size: 0.9375rem !important;
+  font-weight: 600 !important;
+  color: var(--bs-body-color, #212529) !important;
+  line-height: 1.3 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: start !important;
+  max-inline-size: none !important;
+  width: 100% !important;
+  display: block !important;
+  unicode-bidi: isolate;
+}
+
+/* Toast subtitle */
+html body .swal2-container .swal2-popup.haram-swal.swal2-toast .swal2-html-container,
+html body .swal2-container .swal2-popup.haram-swal.swal2-toast .haram-swal-text {
+  grid-area: unset !important;
+  display: block !important;
+  font-size: 0.8125rem !important;
+  font-weight: 400 !important;
+  color: var(--bs-secondary-color, #6c757d) !important;
+  line-height: 1.45 !important;
+  margin: 0 !important;
+  margin-block-start: 6px !important;
+  padding: 0 !important;
+  text-align: start !important;
+  max-inline-size: none !important;
+  width: 100% !important;
+  unicode-bidi: isolate;
+}
+
+/* Toast close × — pinned to inline-end (LEFT in RTL, RIGHT in LTR) */
+html body .swal2-container .swal2-popup.haram-swal.swal2-toast .swal2-close {
+  position: absolute !important;
+  inset-inline-end: 18px !important;
+  inset-inline-start: auto !important;
+  inset-block-start: 18px !important;
+  inset-block-end: auto !important;
+  transform: none !important;
+  grid-area: unset !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 18px !important;
+  height: 18px !important;
+  background: transparent !important;
+  border: none !important;
+  color: var(--bs-secondary-color, #6c757d) !important;
+  font-size: 1.1rem !important;
+  line-height: 1 !important;
+  opacity: 0.6 !important;
+  transition: opacity .15s ease, color .15s ease !important;
+  box-shadow: none !important;
+  cursor: pointer !important;
+}
+html body .swal2-container .swal2-popup.haram-swal.swal2-toast .swal2-close:hover {
+  opacity: 1 !important;
+  color: var(--bs-body-color, #212529) !important;
+}
+
+/* Toast per-type colour variables — theme-driven, light/dark aware */
+.haram-toast-success { --toast-rgb: var(--bs-success-rgb); }
+.haram-toast-error   { --toast-rgb: var(--bs-danger-rgb);  }
+.haram-toast-warning { --toast-rgb: var(--bs-warning-rgb); }
+.haram-toast-info    { --toast-rgb: var(--bs-info-rgb);    }
+
+/* ════════════════════════════════════════════════════════════════════════
+   9. Animations
+   ──────────────────────────────────────────────────────────────────────── */
+@keyframes haram-swal-pop-in {
+  0%   { opacity: 0; transform: translateY(20px) scale(.94); }
+  60%  { opacity: 1; transform: translateY(-4px) scale(1.02); }
+  100% { opacity: 1; transform: translateY(0)   scale(1); }
+}
+@keyframes haram-swal-pop-out {
+  0%   { opacity: 1; transform: translateY(0)  scale(1); }
+  100% { opacity: 0; transform: translateY(6px) scale(.97); }
+}
+@keyframes haram-swal-icon-pop {
+  0%   { opacity: 0; transform: scale(.5) rotate(-8deg); }
+  65%  { opacity: 1; transform: scale(1.08) rotate(2deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0); }
+}
+@keyframes haram-swal-backdrop-fade-in {
+  0%   { background-color: rgba(151, 149, 158, 0); }
+  100% { background-color: rgba(151, 149, 158, 0.5); }
+}
+@keyframes haram-swal-backdrop-fade-out {
+  0%   { background-color: rgba(151, 149, 158, 0.5); }
+  100% { background-color: rgba(151, 149, 158, 0); }
+}
+
+.haram-swal-show { animation: haram-swal-pop-in  .32s cubic-bezier(.34, 1.46, .64, 1) both; }
+.haram-swal-hide { animation: haram-swal-pop-out .15s cubic-bezier(.4, 0, .2, 1)      both; }
+.haram-swal:not(.swal2-toast) .swal2-icon { animation: haram-swal-icon-pop .5s cubic-bezier(.34, 1.56, .64, 1) .08s both; }
+.haram-swal-hide .swal2-icon { animation: none !important; }
+
+/* Override SweetAlert's default `.swal2-container { transition: background-color .1s }`
+   so it doesn't collide with my animations on close. */
+.swal2-container.haram-swal-backdrop-show,
+.swal2-container.haram-swal-backdrop-hide,
+.haram-swal-backdrop-show,
+.haram-swal-backdrop-hide {
+  transition: none !important;
+}
+.haram-swal-backdrop-show {
+  animation: haram-swal-backdrop-fade-in .20s cubic-bezier(.4, 0, .2, 1) both !important;
+}
+.haram-swal-backdrop-hide,
+.swal2-container.haram-swal-backdrop-hide {
+  animation: haram-swal-backdrop-fade-out .15s cubic-bezier(.4, 0, .2, 1) both !important;
+}
