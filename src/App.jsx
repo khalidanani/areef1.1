@@ -99,11 +99,13 @@ function AppRoutes() {
 import { ToastProvider } from './contexts/ToastContext'
 
 function App() {
+  const basename = import.meta.env.DEV ? "/" : "/areef1.1";
+
   return (
     <ToastProvider>
       <ThemeProvider>
         <AuthProvider>
-          <Router>
+          <Router basename={basename}>
             <AppRoutes />
           </Router>
         </AuthProvider>
@@ -111,5 +113,6 @@ function App() {
     </ToastProvider>
   )
 }
+
 
 export default App;
