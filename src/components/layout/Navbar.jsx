@@ -2,6 +2,7 @@ import React from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Sun, Moon } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function Navbar({ toggleMenu }) {
   const { user, signOut } = useAuth();
@@ -34,44 +35,53 @@ export default function Navbar({ toggleMenu }) {
           </li>
 
           {/* User Dropdown */}
-          <li className="nav-item navbar-dropdown dropdown-user dropdown">
-            <a className="nav-link dropdown-toggle hide-arrow p-0" href="#!" data-bs-toggle="dropdown">
-              <div className="avatar avatar-online">
-                <div className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style={{ width: '40px', height: '40px' }}>
-                  {user?.email?.[0].toUpperCase() || 'U'}
+          {user ? (
+            <li className="nav-item navbar-dropdown dropdown-user dropdown">
+              <a className="nav-link dropdown-toggle hide-arrow p-0" href="#!" data-bs-toggle="dropdown">
+                <div className="avatar avatar-online">
+                  <div className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style={{ width: '40px', height: '40px' }}>
+                    {user?.email?.[0].toUpperCase() || 'U'}
+                  </div>
                 </div>
-              </div>
-            </a>
-            <ul className="dropdown-menu dropdown-menu-end">
-              <li>
-                <a className="dropdown-item" href="#!">
-                  <div className="d-flex">
-                    <div className="flex-shrink-0 me-3">
-                      <div className="avatar avatar-online">
-                        <div className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style={{ width: '40px', height: '40px' }}>
-                          {user?.email?.[0].toUpperCase() || 'U'}
+              </a>
+              <ul className="dropdown-menu dropdown-menu-end">
+                <li>
+                  <a className="dropdown-item" href="#!">
+                    <div className="d-flex">
+                      <div className="flex-shrink-0 me-3">
+                        <div className="avatar avatar-online">
+                          <div className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style={{ width: '40px', height: '40px' }}>
+                            {user?.email?.[0].toUpperCase() || 'U'}
+                          </div>
                         </div>
                       </div>
+                      <div className="flex-grow-1">
+                        <h6 className="mb-0">{user?.email || 'User'}</h6>
+                        <small className="text-muted">{user?.user_metadata?.role === 'student' ? 'طالب' : 'معلم'}</small>
+                      </div>
                     </div>
-                    <div className="flex-grow-1">
-                      <h6 className="mb-0">{user?.email || 'User'}</h6>
-                      <small className="text-muted">{user?.user_metadata?.role === 'student' ? 'طالب' : 'معلم'}</small>
-                    </div>
-                  </div>
-                </a>
-              </li>
-              <li><div className="dropdown-divider my-1"></div></li>
-              <li>
-                <button className="dropdown-item text-danger" onClick={signOut}>
-                  <i className="ti tabler-logout me-2 ti-sm"></i>
-                  <span className="align-middle">تسجيل الخروج</span>
-                </button>
-              </li>
-            </ul>
-          </li>
+                  </a>
+                </li>
+                <li><div className="dropdown-divider my-1"></div></li>
+                <li>
+                  <button className="dropdown-item text-danger" onClick={signOut}>
+                    <i className="ti tabler-logout me-2 ti-sm"></i>
+                    <span className="align-middle">تسجيل الخروج</span>
+                  </button>
+                </li>
+              </ul>
+            </li>
+          ) : (
+            <li className="nav-item">
+              <Link to="/login" className="btn btn-primary btn-sm px-3">
+                تسجيل الدخول
+              </Link>
+            </li>
+          )}
         </ul>
       </div>
     </nav>
   );
 }
+
 
