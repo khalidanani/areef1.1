@@ -1,8 +1,11 @@
 import React from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTheme } from '../../contexts/ThemeContext';
+import { Sun, Moon } from 'lucide-react';
 
 export default function Navbar({ toggleMenu }) {
   const { user, signOut } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <nav className="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
@@ -18,6 +21,18 @@ export default function Navbar({ toggleMenu }) {
         </div>
 
         <ul className="navbar-nav flex-row align-items-center ms-auto">
+          {/* Theme Toggle */}
+          <li className="nav-item me-3">
+            <button 
+              onClick={toggleTheme} 
+              className="btn btn-icon btn-label-secondary rounded-circle d-flex align-items-center justify-content-center p-0" 
+              style={{ width: '38px', height: '38px', border: '1px solid var(--bs-border-color)', background: 'transparent' }}
+              title={theme === 'dark' ? 'الوضع الفاتح' : 'الوضع الداكن'}
+            >
+              {theme === 'dark' ? <Sun size={18} className="text-warning" /> : <Moon size={18} className="text-primary" />}
+            </button>
+          </li>
+
           {/* User Dropdown */}
           <li className="nav-item navbar-dropdown dropdown-user dropdown">
             <a className="nav-link dropdown-toggle hide-arrow p-0" href="#!" data-bs-toggle="dropdown">
@@ -59,3 +74,4 @@ export default function Navbar({ toggleMenu }) {
     </nav>
   );
 }
+

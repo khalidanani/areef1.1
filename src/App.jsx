@@ -5,6 +5,7 @@ import Login from './components/Login'
 import RoleSelection from './components/RoleSelection'
 import PWAInstallPrompt from './components/PWAInstallPrompt'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
+import { ThemeProvider } from './contexts/ThemeContext'
 import LayoutWrapper from './components/layout/LayoutWrapper'
 import LoadingScreen from './components/LoadingScreen'
 import './index.css'
@@ -100,11 +101,13 @@ import { ToastProvider } from './contexts/ToastContext'
 function App() {
   return (
     <ToastProvider>
-      <AuthProvider>
-        <Router>
-          <AppRoutes />
-        </Router>
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <Router>
+            <AppRoutes />
+          </Router>
+        </AuthProvider>
+      </ThemeProvider>
     </ToastProvider>
   )
 }

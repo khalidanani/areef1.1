@@ -33,6 +33,7 @@ export default function Sidebar({ toggleMenu }) {
     setTheme(theme === 'light' ? 'terminal' : 'light');
   };
 
+  useEffect(() => {
     if (isStudent && user) {
       fetchChatHistory();
       fetchClasses();
