@@ -10,30 +10,62 @@ export function AuthProvider({ children }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const checkUserRole = async (userId) => {
-    let roles = [];
-    let is_admin = false;
+  async function checkUserRole(userId) {
+    if (!userId) return;
+    try {
+      let roles = [];
+      let is_admin = false;
+      
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://lpyczfbiaoyaxuhnuacn.supabase.co';
+      
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+      
+      const r = await fetch(`${supabaseUrl}/functions/v1/update_role`, { 
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (r.ok) {
+        const data = await r.json();
+        if (data.in_teachers) roles.push('teacher');
+        if (data.in_students) roles.push('student');
+        is_admin = data.is_admin === true;
+      } else {
+        // Fallback to normal if edge function fails
+        const { data: teacherData } = await supabase.from('teachers').select('id, is_admin').eq('id', userId).single();
+        if (teacherData) {
+          roles.push('teacher');
+          is_admin = teacherData.is_admin === true;
+        }
+        const { data: studentData } = await supabase.from('students').select('id').eq('id', userId).single();
+        if (studentData) {
+          roles.push('student');
+        }
+      }
 
-    // Check teacher
-    const { data: teacherData } = await supabase.from('teachers').select('id, is_admin').eq('id', userId).single();
-    if (teacherData) {
-      roles.push('teacher');
-      is_admin = teacherData.is_admin === true;
-    }
-    // Check student
-    const { data: studentData } = await supabase.from('students').select('id').eq('id', userId).single();
-    if (studentData) {
-      roles.push('student');
-    }
-    
-    if (roles.length === 0) {
-      roles.push('new');
-    }
+      if (roles.length === 0) {
+        roles.push('new');
+      }
 
-    setUserRoles(roles);
-    setUserRole(roles[0]); // Fallback for backward compatibility
-    setIsAdmin(is_admin);
-  };
+      setUserRoles(roles);
+      setIsAdmin(is_admin);
+      // For backward compatibility, keep userRole as the primary role
+      if (roles.includes('teacher')) {
+        setUserRole('teacher');
+      } else if (roles.includes('student')) {
+        setUserRole('student');
+      } else {
+        setUserRole('new');
+      }
+    } catch (error) {
+      console.error('Error checking user role:', error);
+      setUserRoles(['new']);
+      setUserRole('new');
+    }
+  }
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
