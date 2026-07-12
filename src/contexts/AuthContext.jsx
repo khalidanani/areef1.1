@@ -118,20 +118,34 @@ export function AuthProvider({ children }) {
       password,
     });
     if (error) {
-      // Attempt signup if user doesn't exist
-      if (error.message.includes('Invalid login credentials')) {
-        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-          email,
-          password,
-        });
-        if (signUpError) throw signUpError;
-        if (signUpData.user) {
-          saveProfileToLocal(signUpData.user, email, password, 'email');
-        }
-        return signUpData;
-      }
       throw error;
     }
+    if (data.user) {
+      saveProfileToLocal(data.user, email, password, 'email');
+    }
+    return data;
+  };
+
+  const signUpWithEmail = async (email, password, username) => {
+    // 1. Check if username exists on the site
+    const { data: exists, error: rpcError } = await supabase.rpc('check_username_exists', { p_username: username });
+    if (rpcError) throw rpcError;
+    if (exists) {
+      throw new Error('اسم المستخدم هذا مستخدم بالفعل. يرجى اختيار اسم آخر.');
+    }
+
+    // 2. Perform Supabase Sign Up
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          username: username,
+          full_name: username
+        }
+      }
+    });
+    if (error) throw error;
     if (data.user) {
       saveProfileToLocal(data.user, email, password, 'email');
     }
@@ -184,6 +198,7 @@ export function AuthProvider({ children }) {
 
   const value = {
     signInWithEmail,
+    signUpWithEmail,
     signInWithGoogle,
     signInWithMicrosoft,
     signOut,
@@ -194,6 +209,7 @@ export function AuthProvider({ children }) {
     isAdmin,
     checkUserRole,
   };
+
 
 
   return (

@@ -4,10 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import mascotImg from '../assets/areef_mascot.png';
 
 export default function Login() {
-  const { signInWithEmail, signInWithGoogle, signInWithMicrosoft, user, userRole, userRoles } = useAuth();
+  const { signInWithEmail, signUpWithEmail, signInWithGoogle, signInWithMicrosoft, user, userRole, userRoles } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [savedProfiles, setSavedProfiles] = useState([]);
@@ -42,12 +45,25 @@ export default function Login() {
     }
   }, [user, userRole, userRoles, navigate]);
 
-  const handleLogin = async (e) => {
+  const handleAuthSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setErrorMsg('');
+
     try {
-      await signInWithEmail(email, password);
+      if (isSignUp) {
+        // Validate password match
+        if (password !== confirmPassword) {
+          setErrorMsg('كلمتا المرور غير متطابقتين!');
+          setLoading(false);
+          return;
+        }
+        // Call SignUp
+        await signUpWithEmail(email, password, username);
+      } else {
+        // Call SignIn
+        await signInWithEmail(email, password);
+      }
     } catch (error) {
       setErrorMsg(error.message);
     }
@@ -75,7 +91,7 @@ export default function Login() {
   return (
     <div className="authentication-wrapper authentication-basic container-p-y">
       <div className="authentication-inner py-4">
-        <div className="card text-center" style={{ maxWidth: '400px', margin: '0 auto' }}>
+        <div className="card text-center" style={{ maxWidth: '450px', margin: '0 auto' }}>
           <div className="card-body">
             <div className="app-brand justify-content-center mb-4 mt-2">
               <div style={{ width: '100px', height: '100px' }}>
@@ -87,7 +103,7 @@ export default function Login() {
             <p className="mb-4">المساعد الذكي الأول للمعلم والطالب</p>
 
             {errorMsg && (
-              <div className="alert alert-danger p-2 mb-3" role="alert">
+              <div className="alert alert-danger p-2 mb-3 text-start" role="alert">
                 {errorMsg === 'Email not confirmed' ? 'يرجى تعطيل "Confirm Email" من إعدادات Supabase' : errorMsg}
               </div>
             )}
@@ -125,7 +141,20 @@ export default function Login() {
               </div>
             ) : (
               <>
-                <form id="formAuthentication" className="mb-3" onSubmit={handleLogin}>
+                <form id="formAuthentication" className="mb-3" onSubmit={handleAuthSubmit}>
+                  {isSignUp && (
+                    <div className="mb-3 text-start">
+                      <label className="form-label">اسم المستخدم (يجب أن يكون فريداً)</label>
+                      <input 
+                        type="text" 
+                        className="form-control text-start" 
+                        placeholder="username"
+                        value={username}
+                        onChange={e => setUsername(e.target.value.replace(/\s+/g, ''))}
+                        required
+                      />
+                    </div>
+                  )}
                   <div className="mb-3 text-start">
                     <label className="form-label">البريد الإلكتروني</label>
                     <input 
@@ -150,12 +179,39 @@ export default function Login() {
                       required
                     />
                   </div>
-                  <div className="mb-3">
+                  {isSignUp && (
+                    <div className="mb-3 text-start">
+                      <label className="form-label">تأكيد كلمة المرور</label>
+                      <input 
+                        type="password" 
+                        className="form-control text-start"
+                        dir="ltr"
+                        placeholder="············"
+                        value={confirmPassword}
+                        onChange={e => setConfirmPassword(e.target.value)}
+                        required
+                      />
+                    </div>
+                  )}
+                  <div className="mb-3 mt-4">
                     <button className="btn btn-primary d-grid w-100" type="submit" disabled={loading}>
-                      {loading ? 'جاري الدخول...' : 'تسجيل الدخول / حساب جديد'}
+                      {loading ? 'جاري التحميل...' : (isSignUp ? 'إنشاء حساب جديد' : 'تسجيل الدخول')}
                     </button>
                   </div>
                 </form>
+
+                <div className="text-center mb-3">
+                  <button 
+                    onClick={() => {
+                      setIsSignUp(!isSignUp);
+                      setErrorMsg('');
+                    }}
+                    className="btn btn-link text-primary p-0"
+                    style={{ textDecoration: 'none' }}
+                  >
+                    {isSignUp ? 'لديك حساب بالفعل؟ تسجيل الدخول' : 'ليس لديك حساب؟ إنشاء حساب جديد'}
+                  </button>
+                </div>
 
                 <div className="divider my-4">
                   <div className="divider-text">أو الدخول بواسطة</div>

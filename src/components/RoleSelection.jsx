@@ -17,13 +17,15 @@ export default function RoleSelection() {
         await supabase.from('teachers').insert({
           id: user.id,
           full_name: user.user_metadata?.full_name || user.email.split('@')[0],
-          email: user.email
+          email: user.email,
+          username: user.user_metadata?.username || user.email.split('@')[0]
         });
       } else if (role === 'student') {
         await supabase.from('students').insert({
           id: user.id,
           full_name: user.user_metadata?.full_name || user.email.split('@')[0],
-          email: user.email
+          email: user.email,
+          username: user.user_metadata?.username || user.email.split('@')[0]
         });
       }
       
